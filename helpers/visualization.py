@@ -14,6 +14,11 @@ import numpy as np
 colors = ['y', 'r', 'g', 'b', 'w']
 
 
+def insert_newlines(string, every=80):
+    '''Insert linebreaks in strings.'''
+    return '\n'.join(str(string[i:i+every]) for i in range(0, len(str(string)), every))
+
+
 def visualize_tf_record_dataset(
         dataset,
         n_show=-1,
@@ -55,7 +60,7 @@ def visualize_tf_record_dataset(
         axs[axs_idx].imshow(data_item['image'])
         axs[axs_idx].get_xaxis().set_visible(False)
         axs[axs_idx].get_yaxis().set_visible(False)
-        # axs[axs_idx].set_title(data_item['filename'])
+        axs[axs_idx].set_title(insert_newlines(data_item['filename'], 20))
         # Handle boxes
         if 'boxes' in data_item.keys():
             plot_boxes(axs[axs_idx], data_item['boxes'],
@@ -106,11 +111,15 @@ def convert_tf_record_metadata(image_item):
     return ret_dict
 
 
+def calculate_box_size(box):
+    return (box[3]-box[1])*(box[2]-box[0])
+
+
 def show_box(ax, box, color, class_name="", dashed=False):
     # x and y must be switched for matplotlib?
     ax.add_patch(plt.Rectangle((box[1], box[0]), box[3]-box[1], box[2]-box[0], linewidth=1,
                  edgecolor=color, facecolor='none', linestyle='--' if dashed else '-'))
-    if class_name:
+    if class_name and calculate_box_size(box) > 4000:
         ax.text(box[1], box[2], class_name, color=color,
                 # horizontalalignment='right',
                 )
