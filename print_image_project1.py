@@ -81,5 +81,5 @@ if __name__ == "__main__":
     all_tf_records = glob.glob(
         'C:\\Repos\\Udacity\\project1\\data\\processed\\*.tfrecord')
     sample_path = [all_tf_records[0]]
-    project1_visualize_inspect(all_tf_records[0:4])
+    project1_visualize_inspect(all_tf_records[0:5])
     # input("Press Enter to continue...")

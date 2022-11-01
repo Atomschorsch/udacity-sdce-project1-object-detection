@@ -55,20 +55,22 @@ def visualize_tf_record_dataset(
         axs[axs_idx].imshow(data_item['image'])
         axs[axs_idx].get_xaxis().set_visible(False)
         axs[axs_idx].get_yaxis().set_visible(False)
-        axs[axs_idx].set_title(data_item['filename'])
+        # axs[axs_idx].set_title(data_item['filename'])
         # Handle boxes
         if 'boxes' in data_item.keys():
             plot_boxes(axs[axs_idx], data_item['boxes'],
                        classes=data_item['classes'],
                        show_classname=show_gt_class_names,
-                       class_names=class_names)
+                       class_names=class_names,
+                       colors=colors)
 
         # Prediction boxes
         if 'predictions' in data_item.keys():
             plot_boxes(axs[axs_idx], data_item['predictions'],
                        data_item['classes'],
                        show_classname=show_pred_class_names,
-                       class_names=class_names)
+                       class_names=class_names,
+                       colors=colors)
 
         if sum(subplot_dim) > 2 and axs_idx == max_num-1:
             axs = axs.reshape(subplot_dim)
@@ -109,8 +111,9 @@ def show_box(ax, box, color, class_name="", dashed=False):
     ax.add_patch(plt.Rectangle((box[1], box[0]), box[3]-box[1], box[2]-box[0], linewidth=1,
                  edgecolor=color, facecolor='none', linestyle='--' if dashed else '-'))
     if class_name:
-        ax.text(box[2], box[1], class_name, color=color,
-                horizontalalignment='right')
+        ax.text(box[1], box[2], class_name, color=color,
+                # horizontalalignment='right',
+                )
         # ax.annotate(classname, xy=(box[0],box[1]),xytext=(box[0]+50,box[1]+50), arrowprops=dict(facecolor='black', shrink=0.05))
 
 
