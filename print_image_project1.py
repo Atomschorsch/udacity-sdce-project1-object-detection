@@ -4,12 +4,13 @@ import matplotlib.pyplot as plt
 import os
 import IPython.display as display
 import numpy as np
+import glob
 from helpers.visualization import visualize_tf_record_dataset
 
 
-def from_example(tf_record_path):
+def from_example(tf_record_path_array):
     '''Function example from https://www.tensorflow.org/tutorials/load_data/tfrecord'''
-    raw_image_dataset = tf.data.TFRecordDataset(tf_record_path)
+    raw_image_dataset = tf.data.TFRecordDataset(tf_record_path_array)
 
     # Create a dictionary describing the features.
     image_feature_description = {
@@ -43,19 +44,19 @@ def from_example(tf_record_path):
         plt.show()
         # display.display(display.Image(data=image_raw))
 
-  # Debug Visu
-  if False:
-    for image_features in parsed_image_dataset.take(3):
-      image_raw = image_features['image/encoded'].numpy()
-      box_x_mins = image_features['image/object/bbox/xmin'].values
-    
-      tf.image.decode_image(image_raw)
-      plt.imshow(tf.image.decode_image(image_raw).numpy())
-      plt.show()
-      # display.display(display.Image(data=image_raw))
+    # Debug Visu
+    if False:
+        for image_features in parsed_image_dataset.take(3):
+        image_raw = image_features['image/encoded'].numpy()
+        box_x_mins = image_features['image/object/bbox/xmin'].values
 
-  # Visualize
-  visualize_tf_record_dataset(parsed_image_dataset, x_max = 3, y_max = 4)
+        tf.image.decode_image(image_raw)
+        plt.imshow(tf.image.decode_image(image_raw).numpy())
+        plt.show()
+        # display.display(display.Image(data=image_raw))
+
+    # Visualize
+    visualize_tf_record_dataset(parsed_image_dataset, x_max=3, y_max=4)
 
 
 def read_plot_tf_records(tf_record_path):
@@ -115,7 +116,6 @@ def get_dataset_small(filename):
     dataset = dataset.map(
         parse_tfr_element
     )
-
     return dataset
 
 
@@ -130,22 +130,13 @@ def run_dataset_example(tfrecord_file, num_records_to_plot=3):
 
 
 if __name__ == "__main__":
-    sample_path = "C:\\Repos\\Udacity\\project1\\data\\processed\\segment-10017090168044687777_6380_000_6400_000_with_camera_labels.tfrecord"
-    # "/c/Repos/Udacity/project1/data/processed/segment-10017090168044687777_6380_000_6400_000_with_camera_labels.tfrecord"
+    all_tf_records = glob.glob(
+        'C:\\Repos\\Udacity\\project1\\data\\processed\\*.tfrecord')
+    sample_path = [all_tf_records[0]]
+    # "C:\\Repos\\Udacity\\project1\\data\\processed\\segment-10017090168044687777_6380_000_6400_000_with_camera_labels.tfrecord"
+
     # read_plot_tf_records(sample_path)
-    from_example(sample_path)
+    from_example(all_tf_records[0:4])
+    # input("Press Enter to continue...")
 
     # run_dataset_example('./data/small_images.tfrecords')
-
-    # raw_dataset = tf.data.TFRecordDataset(tfrecord_file)
-    # for raw_record in raw_dataset.take(num_records_to_plot):
-    #     example = tf.train.Example()
-    #     example.ParseFromString(raw_record.numpy())
-    #     record = tf.io.parse_single_example(raw_record, feature_description)
-
-    #     width = record['image/width'].numpy()
-    #     image = record['image/encoded']
-
-    #     # Convert image from raw bytes to numpy array
-    #     image_decoded = tf.image.decode_image(image)
-    #     image_decoded_np = image_decoded.numpy()

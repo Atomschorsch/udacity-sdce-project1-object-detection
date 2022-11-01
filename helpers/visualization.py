@@ -11,8 +11,8 @@ import tensorflow as tf
 import json
 import numpy as np
 
-colors = ['y','r','g']
-class_names = ['class 0','class 1', 'class 2']
+colors = ['y','r','g', 'b', 'w']
+class_names = ['class 0','class 1', 'class 2', 'class 3', 'class 4', 'class 5']
 
 def visualize_tf_record_dataset(dataset, n_show = -1, x_max = 5, y_max = 5, show_pred_classnames = True, show_gt_classnames = False):
     """
@@ -140,12 +140,12 @@ def get_image_data(image_array, filename):
     else:
         return None
 
-def plot_boxes(ax, image_data, is_ground_truth = False):
+def plot_boxes(ax, image_data, is_ground_truth = False, class_names = class_names, colors = colors):
     for idx, box in enumerate(image_data['boxes']):
         current_class = image_data['classes'][idx]
         classname = "" if is_ground_truth else class_names[current_class]
         # Show gt without label (should be mostly obvious) and as dashed box
-        dashed = True if is_ground_truth else False
+        dashed = is_ground_truth
         color = colors[current_class]        
         show_box(ax, box, classname, color, dashed=dashed) 
 
