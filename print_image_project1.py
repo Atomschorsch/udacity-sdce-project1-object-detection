@@ -28,7 +28,7 @@ def parse_record(record):
     return tf.io.parse_single_example(record, image_feature_description)
 
 
-def decode_record(record):
+def transform_record(record):
     ret_dict = {
         'image': tf.image.decode_image(record['image/encoded']).numpy(),
         'filename': record['image/filename'].numpy(),
@@ -65,17 +65,18 @@ def project1_visualize_inspect(tf_record_path_array):
             plt.show()
             # display.display(display.Image(data=image_raw))
 
-    # Visualization & inspection
-    for element in parsed_image_dataset.take(10):
-        decoded_element = decode_record(element)
+    # Transform to numpy/python if necessary
+    # for element in parsed_image_dataset.take(10):
+    #     decoded_element = transform_record(element)
 
     # Visualize
+    print(tf.data.experimental.cardinality(parsed_image_dataset).numpy())
     visualize_tf_record_dataset(
         parsed_image_dataset,
         x_max=4, y_max=4,
         show_gt_class_names=True,
         class_names=['', 'car', '', 'pedestrian', 'bike'],
-        decode_fun=decode_record)
+        transform_fun=transform_record)
 
 
 if __name__ == "__main__":

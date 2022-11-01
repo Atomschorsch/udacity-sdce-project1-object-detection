@@ -25,7 +25,7 @@ def visualize_tf_record_dataset(
         show_pred_class_names=True,
         class_names=[],
         colors=colors,
-        decode_fun=None):
+        transform_fun=None):
     """
     create a grid visualization of images with color coded bboxes
     args:
@@ -58,6 +58,7 @@ def visualize_tf_record_dataset(
                 # Only one image
                 plt.figure()
                 axs = [plt.gca()]
+
         # Prepare data, get in expected shape
         # {
         #     "image": image data,
@@ -65,27 +66,27 @@ def visualize_tf_record_dataset(
         #     "classes": [2,1],
         #     "predictions": [[10,10,50,50],[100,100,110,120]],
         # }
-        if decode_fun:
-            decoded_data = decode_fun(current_image_data)
+        if transform_fun:
+            data_item = transform_fun(current_image_data)
         else:
-            decoded_data = current_image_data
+            data_item = current_image_data
         # Handle image
-        decoded_image = decoded_data['image']
+        decoded_image = data_item['image']
         axs[axs_idx].imshow(decoded_image)
         axs[axs_idx].get_xaxis().set_visible(False)
         axs[axs_idx].get_yaxis().set_visible(False)
-        axs[axs_idx].set_title(current_image_data['image/filename'].numpy())
-        # image_data = get_image_data(ground_truth, current_image_data)
-        if 'boxes' in decoded_data.keys():
-            plot_boxes(axs[axs_idx], decoded_data['boxes'],
-                       classes=decoded_data['classes'],
+        axs[axs_idx].set_title(data_item['filename'])
+        # Handle boxes
+        if 'boxes' in data_item.keys():
+            plot_boxes(axs[axs_idx], data_item['boxes'],
+                       classes=data_item['classes'],
                        show_classname=show_gt_class_names,
                        class_names=class_names)
 
         # Prediction boxes
-        if 'predictions' in decoded_data.keys():
-            plot_boxes(axs[axs_idx], decoded_data['predictions'],
-                       decoded_data['classes'],
+        if 'predictions' in data_item.keys():
+            plot_boxes(axs[axs_idx], data_item['predictions'],
+                       data_item['classes'],
                        show_classname=show_pred_class_names,
                        class_names=class_names)
 
