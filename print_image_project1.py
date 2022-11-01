@@ -31,7 +31,7 @@ def parse_record(record):
 def decode_record(record):
     ret_dict = {
         'image': tf.image.decode_image(record['image/encoded']).numpy(),
-        'file_name': record['image/filename'].numpy(),
+        'filename': record['image/filename'].numpy(),
         'width': record['image/width'].numpy(),
         'height': record['image/height'].numpy(),
         'classes_text': record['image/object/class/text'].values.numpy(),
@@ -70,7 +70,12 @@ def project1_visualize_inspect(tf_record_path_array):
         decoded_element = decode_record(element)
 
     # Visualize
-    visualize_tf_record_dataset(parsed_image_dataset, x_max=4, y_max=4)
+    visualize_tf_record_dataset(
+        parsed_image_dataset,
+        x_max=4, y_max=4,
+        show_gt_class_names=True,
+        class_names=['', 'car', '', 'pedestrian', 'bike'],
+        decode_fun=decode_record)
 
 
 if __name__ == "__main__":

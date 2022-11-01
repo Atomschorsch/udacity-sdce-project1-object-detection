@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # Module for visualization tooling
 
-#from utils import get_data
+# from utils import get_data
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import os
@@ -16,12 +16,25 @@ class_names = ['class 0', 'class 1',
                'class 2', 'class 3', 'class 4', 'class 5']
 
 
-def visualize_tf_record_dataset(dataset, n_show=-1, x_max=5, y_max=5, show_pred_classnames=True, show_gt_classnames=False, decode_fun=None):
+def visualize_tf_record_dataset(
+        dataset,
+        n_show=-1,
+        x_max=5,
+        y_max=5,
+        show_gt_class_names=False,
+        show_pred_class_names=True,
+        class_names=[],
+        colors=colors,
+        decode_fun=None):
     """
     create a grid visualization of images with color coded bboxes
     args:
     - ground_truth [list[dict]]: ground truth data
     """
+    # Check input
+    if (show_gt_class_names or show_pred_class_names) and not class_names:
+        raise Exception(
+            f"If you want classnames to be shown, please provide input class_names.")
 
     # Make subplots with loop over images
     filenames = [data_item['image/filename'].numpy() for data_item in dataset]
@@ -33,7 +46,7 @@ def visualize_tf_record_dataset(dataset, n_show=-1, x_max=5, y_max=5, show_pred_
 
     for idx_file, current_image_data in enumerate(dataset.take(n_show)):
         axs_idx = idx_file % max_num
-        # Handle multiple subplot figures
+        # Handle subplot figures / dimensions
         if axs_idx == 0:
             if sum(subplot_dim) > 2:
                 # Multiple images
@@ -45,23 +58,36 @@ def visualize_tf_record_dataset(dataset, n_show=-1, x_max=5, y_max=5, show_pred_
                 # Only one image
                 plt.figure()
                 axs = [plt.gca()]
+        # Prepare data, get in expected shape
+        # {
+        #     "image": image data,
+        #     "boxes": [[10,10,50,50],[100,100,110,120]],
+        #     "classes": [2,1],
+        #     "predictions": [[10,10,50,50],[100,100,110,120]],
+        # }
+        if decode_fun:
+            decoded_data = decode_fun(current_image_data)
+        else:
+            decoded_data = current_image_data
         # Handle image
-        raw_image = current_image_data['image/encoded'].numpy()
-        decoded_image = tf.image.decode_image(raw_image)
+        decoded_image = decoded_data['image']
         axs[axs_idx].imshow(decoded_image)
         axs[axs_idx].get_xaxis().set_visible(False)
         axs[axs_idx].get_yaxis().set_visible(False)
         axs[axs_idx].set_title(current_image_data['image/filename'].numpy())
-        # Ground truth boxes
-        gt_boxes = convert_tf_record_metadata(current_image_data)
         # image_data = get_image_data(ground_truth, current_image_data)
-        if gt_boxes:
-            plot_boxes(axs[axs_idx], gt_boxes, is_ground_truth=True)
+        if 'boxes' in decoded_data.keys():
+            plot_boxes(axs[axs_idx], decoded_data['boxes'],
+                       classes=decoded_data['classes'],
+                       show_classname=show_gt_class_names,
+                       class_names=class_names)
 
         # Prediction boxes
-        image_data = []
-        if image_data:
-            plot_boxes(axs[axs_idx], image_data, is_ground_truth=False)
+        if 'predictions' in decoded_data.keys():
+            plot_boxes(axs[axs_idx], decoded_data['predictions'],
+                       decoded_data['classes'],
+                       show_classname=show_pred_class_names,
+                       class_names=class_names)
 
         if sum(subplot_dim) > 2 and axs_idx == max_num-1:
             axs = axs.reshape(subplot_dim)
@@ -97,14 +123,14 @@ def convert_tf_record_metadata(image_item):
     return ret_dict
 
 
-def show_box(ax, box, classname, color, dashed=False):
+def show_box(ax, box, color, class_name="", dashed=False):
     # x and y must be switched for matplotlib?
     ax.add_patch(plt.Rectangle((box[1], box[0]), box[3]-box[1], box[2]-box[0], linewidth=1,
                  edgecolor=color, facecolor='none', linestyle='--' if dashed else '-'))
-    if classname:
-        ax.text(box[2], box[1], classname, color=color,
+    if class_name:
+        ax.text(box[2], box[1], class_name, color=color,
                 horizontalalignment='right')
-        #ax.annotate(classname, xy=(box[0],box[1]),xytext=(box[0]+50,box[1]+50), arrowprops=dict(facecolor='black', shrink=0.05))
+        # ax.annotate(classname, xy=(box[0],box[1]),xytext=(box[0]+50,box[1]+50), arrowprops=dict(facecolor='black', shrink=0.05))
 
 
 def get_image_list(ground_truth, predictions=[]):
@@ -150,14 +176,16 @@ def get_image_data(image_array, filename):
         return None
 
 
-def plot_boxes(ax, image_data, is_ground_truth=False, class_names=class_names, colors=colors):
-    for idx, box in enumerate(image_data['boxes']):
-        current_class = image_data['classes'][idx]
-        classname = "" if is_ground_truth else class_names[current_class]
-        # Show gt without label (should be mostly obvious) and as dashed box
-        dashed = is_ground_truth
-        color = colors[current_class]
-        show_box(ax, box, classname, color, dashed=dashed)
+def plot_boxes(ax, boxes, classes, dashed=False, show_classname=True, class_names=class_names, colors=colors):
+    for box, current_class in zip(boxes, classes):
+        # Check if class_name should be displayed
+        class_name = str(current_class)
+        if class_names:
+            class_name = class_names[current_class]
+        class_name = class_name if show_classname else ""
+
+        show_box(ax, box, class_name=class_name if show_classname else "",
+                 color=colors[current_class], dashed=dashed)
 
 
 def viz(ground_truth, predictions=[], x_max=5, y_max=5, show_pred_classnames=True, show_gt_classnames=False):
@@ -196,12 +224,13 @@ def viz(ground_truth, predictions=[], x_max=5, y_max=5, show_pred_classnames=Tru
         # Ground truth boxes
         image_data = get_image_data(ground_truth, file)
         if image_data:
-            plot_boxes(axs[axs_idx], image_data, is_ground_truth=True)
+            plot_boxes(axs[axs_idx], image_data,
+                       show_classname=False, dashed=True)
 
         # Prediction boxes
         image_data = get_image_data(predictions, file)
         if image_data:
-            plot_boxes(axs[axs_idx], image_data, is_ground_truth=False)
+            plot_boxes(axs[axs_idx], image_data)
 
         if sum(subplot_dim) > 2 and axs_idx == max_num-1:
             axs = axs.reshape(subplot_dim)
