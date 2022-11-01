@@ -11,10 +11,12 @@ import tensorflow as tf
 import json
 import numpy as np
 
-colors = ['y','r','g', 'b', 'w']
-class_names = ['class 0','class 1', 'class 2', 'class 3', 'class 4', 'class 5']
+colors = ['y', 'r', 'g', 'b', 'w']
+class_names = ['class 0', 'class 1',
+               'class 2', 'class 3', 'class 4', 'class 5']
 
-def visualize_tf_record_dataset(dataset, n_show = -1, x_max = 5, y_max = 5, show_pred_classnames = True, show_gt_classnames = False):
+
+def visualize_tf_record_dataset(dataset, n_show=-1, x_max=5, y_max=5, show_pred_classnames=True, show_gt_classnames=False, decode_fun=None):
     """
     create a grid visualization of images with color coded bboxes
     args:
@@ -26,9 +28,8 @@ def visualize_tf_record_dataset(dataset, n_show = -1, x_max = 5, y_max = 5, show
     num_images = len(filenames)
     if n_show == -1:
         n_show = num_images
-    subplot_dim, _ = get_subplot_dims(num_images, x_max = x_max, y_max = y_max)
+    subplot_dim, _ = get_subplot_dims(num_images, x_max=x_max, y_max=y_max)
     max_num = x_max * y_max
-    
 
     for idx_file, current_image_data in enumerate(dataset.take(n_show)):
         axs_idx = idx_file % max_num
@@ -36,15 +37,17 @@ def visualize_tf_record_dataset(dataset, n_show = -1, x_max = 5, y_max = 5, show
         if axs_idx == 0:
             if sum(subplot_dim) > 2:
                 # Multiple images
-                fig, axs = plt.subplots(subplot_dim[0], subplot_dim[1], figsize=(18, 18)) # 
-                axs = axs.reshape(min(max_num, subplot_dim[0]* subplot_dim[1]))
+                fig, axs = plt.subplots(
+                    subplot_dim[0], subplot_dim[1], figsize=(18, 18))
+                axs = axs.reshape(
+                    min(max_num, subplot_dim[0] * subplot_dim[1]))
             else:
                 # Only one image
                 plt.figure()
                 axs = [plt.gca()]
         # Handle image
         raw_image = current_image_data['image/encoded'].numpy()
-        decoded_image = tf.image.decode_image(raw_image)    
+        decoded_image = tf.image.decode_image(raw_image)
         axs[axs_idx].imshow(decoded_image)
         axs[axs_idx].get_xaxis().set_visible(False)
         axs[axs_idx].get_yaxis().set_visible(False)
@@ -53,12 +56,12 @@ def visualize_tf_record_dataset(dataset, n_show = -1, x_max = 5, y_max = 5, show
         gt_boxes = convert_tf_record_metadata(current_image_data)
         # image_data = get_image_data(ground_truth, current_image_data)
         if gt_boxes:
-            plot_boxes(axs[axs_idx], gt_boxes, is_ground_truth = True)
+            plot_boxes(axs[axs_idx], gt_boxes, is_ground_truth=True)
 
         # Prediction boxes
         image_data = []
         if image_data:
-            plot_boxes(axs[axs_idx], image_data, is_ground_truth = False)
+            plot_boxes(axs[axs_idx], image_data, is_ground_truth=False)
 
         if sum(subplot_dim) > 2 and axs_idx == max_num-1:
             axs = axs.reshape(subplot_dim)
@@ -88,42 +91,45 @@ def convert_tf_record_metadata(image_item):
     }
     boxes = []
     for idx in range(len(box_x_mins)):
-        boxes.append([box_y_mins[idx],box_x_mins[idx], box_y_maxs[idx],box_x_maxs[idx]])
-    ret_dict['boxes']=boxes
+        boxes.append([box_y_mins[idx], box_x_mins[idx],
+                     box_y_maxs[idx], box_x_maxs[idx]])
+    ret_dict['boxes'] = boxes
     return ret_dict
-    
 
 
-
-
-def show_box(ax, box, classname, color, dashed = False):
+def show_box(ax, box, classname, color, dashed=False):
     # x and y must be switched for matplotlib?
-    ax.add_patch(plt.Rectangle((box[1],box[0]),box[3]-box[1],box[2]-box[0],linewidth=1,edgecolor=color,facecolor='none',linestyle='--' if dashed else '-'))
+    ax.add_patch(plt.Rectangle((box[1], box[0]), box[3]-box[1], box[2]-box[0], linewidth=1,
+                 edgecolor=color, facecolor='none', linestyle='--' if dashed else '-'))
     if classname:
-        ax.text(box[2],box[1], classname, color=color, horizontalalignment = 'right')
+        ax.text(box[2], box[1], classname, color=color,
+                horizontalalignment='right')
         #ax.annotate(classname, xy=(box[0],box[1]),xytext=(box[0]+50,box[1]+50), arrowprops=dict(facecolor='black', shrink=0.05))
 
-def get_image_list(ground_truth, predictions = []):
+
+def get_image_list(ground_truth, predictions=[]):
     filenames = [image['filename'] for image in ground_truth + predictions]
     return set(filenames)
+
 
 def get_coarse_resolution(num):
     x_dim = 1
     y_dim = 1
     while x_dim*y_dim < num:
-        if x_dim<=y_dim:
-            x_dim+=1
+        if x_dim <= y_dim:
+            x_dim += 1
         else:
-            y_dim+=1
-    return (y_dim,x_dim)
+            y_dim += 1
+    return (y_dim, x_dim)
 
 
-def get_subplot_dims(num_images, x_max = 5, y_max = 5):
+def get_subplot_dims(num_images, x_max=5, y_max=5):
     """Get subplot dimensions based on number of images"""
     max_images = x_max * y_max
     num_subplots = math.ceil(num_images / max_images)
     subplot_dim = get_coarse_resolution(min(num_images, max_images))
     return subplot_dim, num_subplots
+
 
 def get_current_subplot_position(current_idx, x_dim, y_dim):
     """For subplots to derive from index to grid position. Unnecessary if shape is flattened and can be used in for loop."""
@@ -131,25 +137,30 @@ def get_current_subplot_position(current_idx, x_dim, y_dim):
     y_pos = current_idx // y_dim
     return x_pos, y_pos
 
+
 def get_image_data(image_array, filename):
     """Get image data if image is available in array"""
-    current_prediction = [image for image in image_array if image['filename'] == filename]
-    assert len(current_prediction)<=1, "Multiple prediciton images match, should not happen"
-    if len(current_prediction)>0:
+    current_prediction = [
+        image for image in image_array if image['filename'] == filename]
+    assert len(
+        current_prediction) <= 1, "Multiple prediciton images match, should not happen"
+    if len(current_prediction) > 0:
         return current_prediction[0]
     else:
         return None
 
-def plot_boxes(ax, image_data, is_ground_truth = False, class_names = class_names, colors = colors):
+
+def plot_boxes(ax, image_data, is_ground_truth=False, class_names=class_names, colors=colors):
     for idx, box in enumerate(image_data['boxes']):
         current_class = image_data['classes'][idx]
         classname = "" if is_ground_truth else class_names[current_class]
         # Show gt without label (should be mostly obvious) and as dashed box
         dashed = is_ground_truth
-        color = colors[current_class]        
-        show_box(ax, box, classname, color, dashed=dashed) 
+        color = colors[current_class]
+        show_box(ax, box, classname, color, dashed=dashed)
 
-def viz(ground_truth, predictions = [], x_max = 5, y_max = 5, show_pred_classnames = True, show_gt_classnames = False):
+
+def viz(ground_truth, predictions=[], x_max=5, y_max=5, show_pred_classnames=True, show_gt_classnames=False):
     """
     create a grid visualization of images with color coded bboxes
     args:
@@ -159,9 +170,8 @@ def viz(ground_truth, predictions = [], x_max = 5, y_max = 5, show_pred_classnam
     # Make subplots with loop over images
     filenames = get_image_list(ground_truth, predictions)
     num_images = len(filenames)
-    subplot_dim, _ = get_subplot_dims(num_images, x_max = x_max, y_max = y_max)
+    subplot_dim, _ = get_subplot_dims(num_images, x_max=x_max, y_max=y_max)
     max_num = x_max * y_max
-    
 
     for idx_file, file in enumerate(filenames):
         axs_idx = idx_file % max_num
@@ -169,14 +179,16 @@ def viz(ground_truth, predictions = [], x_max = 5, y_max = 5, show_pred_classnam
         if axs_idx == 0:
             if sum(subplot_dim) > 2:
                 # Multiple images
-                fig, axs = plt.subplots(subplot_dim[0], subplot_dim[1], figsize=(18, 18)) # 
-                axs = axs.reshape(min(max_num, subplot_dim[0]* subplot_dim[1]))
+                fig, axs = plt.subplots(
+                    subplot_dim[0], subplot_dim[1], figsize=(18, 18))
+                axs = axs.reshape(
+                    min(max_num, subplot_dim[0] * subplot_dim[1]))
             else:
                 # Only one image
                 plt.figure()
                 axs = [plt.gca()]
         # Handle image
-        img = mpimg.imread(file)        
+        img = mpimg.imread(file)
         axs[axs_idx].imshow(img)
         axs[axs_idx].get_xaxis().set_visible(False)
         axs[axs_idx].get_yaxis().set_visible(False)
@@ -184,12 +196,12 @@ def viz(ground_truth, predictions = [], x_max = 5, y_max = 5, show_pred_classnam
         # Ground truth boxes
         image_data = get_image_data(ground_truth, file)
         if image_data:
-            plot_boxes(axs[axs_idx], image_data, is_ground_truth = True)
+            plot_boxes(axs[axs_idx], image_data, is_ground_truth=True)
 
         # Prediction boxes
         image_data = get_image_data(predictions, file)
         if image_data:
-            plot_boxes(axs[axs_idx], image_data, is_ground_truth = False)
+            plot_boxes(axs[axs_idx], image_data, is_ground_truth=False)
 
         if sum(subplot_dim) > 2 and axs_idx == max_num-1:
             axs = axs.reshape(subplot_dim)
@@ -197,12 +209,14 @@ def viz(ground_truth, predictions = [], x_max = 5, y_max = 5, show_pred_classnam
     plt.tight_layout()
     plt.show()
 
+
 def add_json(container, filename, boxes, classes):
     container.append({
         "filename": filename,
         "boxes": boxes,
         "classes": classes,
     })
+
 
 def test_data_generator(num_images):
     """ Generator to generate random ground_truth and prediction json structures on CatsAndDogs dataset images"""
@@ -214,9 +228,9 @@ def test_data_generator(num_images):
     dog_dir = os.path.join(data_root_dir, "Dog")
     for idx in range(num_images):
         # Choose cat or dog
-        is_cat = bool(np.random.randint(0,1+1))
+        is_cat = bool(np.random.randint(0, 1+1))
         # TODOCreate random gt boxes
-        image_index = np.random.randint(0,12000+1)
+        image_index = np.random.randint(0, 12000+1)
         image_dir = cat_dir if is_cat else dog_dir
         image_class = 1 if is_cat else 2
         image_path = os.path.join(image_dir, str(image_index) + '.jpg')
@@ -224,30 +238,31 @@ def test_data_generator(num_images):
             continue
         gt_boxes = []
         gt_classes = []
-        for box_idx in range(np.random.randint(0,10+1)):
-            x1 = np.random.randint(0,100+1)
-            y1 = np.random.randint(0,100+1)
-            x2 = x1 + np.random.randint(30,100+1)
-            y2 = y1 + np.random.randint(30,100+1)
-            gt_boxes.append([x1,y1,x2,y2])
-            gt_classes.append(np.random.randint(1,2+1))
+        for box_idx in range(np.random.randint(0, 10+1)):
+            x1 = np.random.randint(0, 100+1)
+            y1 = np.random.randint(0, 100+1)
+            x2 = x1 + np.random.randint(30, 100+1)
+            y2 = y1 + np.random.randint(30, 100+1)
+            gt_boxes.append([x1, y1, x2, y2])
+            gt_classes.append(np.random.randint(1, 2+1))
         add_json(ground_truth, image_path, gt_boxes, gt_classes)
         # Only add predictions in ~ 19/20 cases
         pred_boxes = []
         pred_classes = []
-        if np.random.randint(0,20+1):
-            for box_idx in range(np.random.randint(0,10+1)):
-                x1 = np.random.randint(0,100+1)
-                y1 = np.random.randint(0,100+1)
-                x2 = x1 + np.random.randint(30,100+1)
-                y2 = y1 + np.random.randint(30,100+1)
-                pred_boxes.append([x1,y1,x2,y2])
-                pred_classes.append(np.random.randint(1,2+1))
+        if np.random.randint(0, 20+1):
+            for box_idx in range(np.random.randint(0, 10+1)):
+                x1 = np.random.randint(0, 100+1)
+                y1 = np.random.randint(0, 100+1)
+                x2 = x1 + np.random.randint(30, 100+1)
+                y2 = y1 + np.random.randint(30, 100+1)
+                pred_boxes.append([x1, y1, x2, y2])
+                pred_classes.append(np.random.randint(1, 2+1))
         add_json(predictions, image_path, pred_boxes, pred_classes)
 
     return ground_truth, predictions
 
-if __name__ == "__main__": 
+
+if __name__ == "__main__":
     # ground_truth, _ = get_data()
 
     # ground_truth = [{

@@ -18,7 +18,6 @@ def parse_record(record):
         'image/source_id': tf.io.FixedLenFeature([], tf.string),
         'image/encoded': tf.io.FixedLenFeature([], tf.string),
         'image/format': tf.io.FixedLenFeature([], tf.string),
-        # tf.train.FloatList(value=value)
         'image/object/bbox/xmin': tf.io.VarLenFeature(dtype=tf.float32),
         'image/object/bbox/xmax': tf.io.VarLenFeature(dtype=tf.float32),
         'image/object/bbox/ymin': tf.io.VarLenFeature(dtype=tf.float32),
