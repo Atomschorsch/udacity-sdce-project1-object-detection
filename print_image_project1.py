@@ -6,11 +6,14 @@ import IPython.display as display
 import numpy as np
 import glob
 from helpers.visualization import visualize_tf_record_dataset
+from helpers.exploratory_analysis import inspect_tf_record_structure, print_dataset_basics
 
 
 def from_example(tf_record_path_array):
     '''Function example from https://www.tensorflow.org/tutorials/load_data/tfrecord'''
     raw_image_dataset = tf.data.TFRecordDataset(tf_record_path_array)
+    inspect_tf_record_structure(raw_image_dataset)
+    print_dataset_basics(raw_image_dataset)
 
     # Create a dictionary describing the features.
     image_feature_description = {
