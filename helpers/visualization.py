@@ -12,8 +12,6 @@ import json
 import numpy as np
 
 colors = ['y', 'r', 'g', 'b', 'w']
-class_names = ['class 0', 'class 1',
-               'class 2', 'class 3', 'class 4', 'class 5']
 
 
 def visualize_tf_record_dataset(
@@ -24,27 +22,21 @@ def visualize_tf_record_dataset(
         show_gt_class_names=False,
         show_pred_class_names=True,
         class_names=[],
-        colors=colors,
-        transform_fun=None):
+        colors=colors):
     """
     create a grid visualization of images with color coded bboxes
     args:
     - ground_truth [list[dict]]: ground truth data
     """
-    # Check input
-    if (show_gt_class_names or show_pred_class_names) and not class_names:
-        raise Exception(
-            f"If you want classnames to be shown, please provide input class_names.")
 
     # Make subplots with loop over images
-    filenames = [data_item['image/filename'].numpy() for data_item in dataset]
-    num_images = len(filenames)
+    num_images = len(dataset)
     if n_show == -1:
         n_show = num_images
     subplot_dim, _ = get_subplot_dims(num_images, x_max=x_max, y_max=y_max)
     max_num = x_max * y_max
 
-    for idx_file, current_image_data in enumerate(dataset.take(n_show)):
+    for idx_file, data_item in enumerate(dataset[:min(n_show-1, num_images)]):
         axs_idx = idx_file % max_num
         # Handle subplot figures / dimensions
         if axs_idx == 0:
@@ -59,20 +51,8 @@ def visualize_tf_record_dataset(
                 plt.figure()
                 axs = [plt.gca()]
 
-        # Prepare data, get in expected shape
-        # {
-        #     "image": image data,
-        #     "boxes": [[10,10,50,50],[100,100,110,120]],
-        #     "classes": [2,1],
-        #     "predictions": [[10,10,50,50],[100,100,110,120]],
-        # }
-        if transform_fun:
-            data_item = transform_fun(current_image_data)
-        else:
-            data_item = current_image_data
         # Handle image
-        decoded_image = data_item['image']
-        axs[axs_idx].imshow(decoded_image)
+        axs[axs_idx].imshow(data_item['image'])
         axs[axs_idx].get_xaxis().set_visible(False)
         axs[axs_idx].get_yaxis().set_visible(False)
         axs[axs_idx].set_title(data_item['filename'])
@@ -177,10 +157,10 @@ def get_image_data(image_array, filename):
         return None
 
 
-def plot_boxes(ax, boxes, classes, dashed=False, show_classname=True, class_names=class_names, colors=colors):
+def plot_boxes(ax, boxes, classes, dashed=False, show_classname=True, class_names=[], colors=colors):
     for box, current_class in zip(boxes, classes):
         # Check if class_name should be displayed
-        class_name = str(current_class)
+        class_name = 'class ' + str(current_class)
         if class_names:
             class_name = class_names[current_class]
         class_name = class_name if show_classname else ""

@@ -65,18 +65,16 @@ def project1_visualize_inspect(tf_record_path_array):
             plt.show()
             # display.display(display.Image(data=image_raw))
 
-    # Transform to numpy/python if necessary
-    # for element in parsed_image_dataset.take(10):
-    #     decoded_element = transform_record(element)
+    # Transform to numpy/python if wanted
+    transformed_dataset = [transform_record(
+        element) for element in parsed_image_dataset]
 
     # Visualize
-    print(tf.data.experimental.cardinality(parsed_image_dataset).numpy())
     visualize_tf_record_dataset(
-        parsed_image_dataset,
+        transformed_dataset,
         x_max=4, y_max=4,
         show_gt_class_names=True,
-        class_names=['', 'car', '', 'pedestrian', 'bike'],
-        transform_fun=transform_record)
+        class_names=['', 'car', '', 'pedestrian', 'bike'])
 
 
 if __name__ == "__main__":
