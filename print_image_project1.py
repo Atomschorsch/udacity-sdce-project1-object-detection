@@ -1,9 +1,10 @@
 # Example from https://stackoverflow.com/questions/65783423/tfrecord-print-image-from-tfrecord-file
 import tensorflow as tf
 import matplotlib.pyplot as plt
-import numpy as np
 import os
 import IPython.display as display
+import numpy as np
+from helpers.visualization import visualize_tf_record_dataset
 
 
 def from_example(tf_record_path):
@@ -41,6 +42,20 @@ def from_example(tf_record_path):
         plt.imshow(tf.image.decode_image(image_raw).numpy())
         plt.show()
         # display.display(display.Image(data=image_raw))
+
+  # Debug Visu
+  if False:
+    for image_features in parsed_image_dataset.take(3):
+      image_raw = image_features['image/encoded'].numpy()
+      box_x_mins = image_features['image/object/bbox/xmin'].values
+    
+      tf.image.decode_image(image_raw)
+      plt.imshow(tf.image.decode_image(image_raw).numpy())
+      plt.show()
+      # display.display(display.Image(data=image_raw))
+
+  # Visualize
+  visualize_tf_record_dataset(parsed_image_dataset, x_max = 3, y_max = 4)
 
 
 def read_plot_tf_records(tf_record_path):
@@ -84,7 +99,7 @@ def parse_tfr_element(element):
     filename = content['image/filename']
     print(filename)
     label = content['image/object/class/label']
-    #raw_image = content['image/encoded']
+    # raw_image = content['image/encoded']
 
     # get our 'feature'-- our image -- and reshape it appropriately
     feature = tf.io.parse_tensor(raw_image, out_type=tf.int16)
@@ -105,7 +120,7 @@ def get_dataset_small(filename):
 
 
 def run_dataset_example(tfrecord_file, num_records_to_plot=3):
-    #tfrecord_file = './data/small_images.tfrecords'
+    # tfrecord_file = './data/small_images.tfrecords'
     dataset = get_dataset_small(tfrecord_file)
 
     for sample in dataset.take(num_records_to_plot):
