@@ -53,12 +53,13 @@ def project1_visualize_inspect(tf_record_path_array):
     '''Function to visualize and inspect dataset according to project1'''
     raw_image_dataset = tf.data.TFRecordDataset(tf_record_path_array)
     display_structure_of_dataset_item(raw_image_dataset)
-    show_dataset_basics(raw_image_dataset)
 
     parsed_image_dataset = raw_image_dataset.map(parse_record)
     # Transform to numpy/python if wanted
     transformed_dataset = [transform_record(
         element) for element in parsed_image_dataset]
+
+    show_dataset_basics(transformed_dataset)
 
     # Debug Visu
     if False:
