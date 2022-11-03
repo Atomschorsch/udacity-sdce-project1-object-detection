@@ -7,3 +7,4 @@
 *.jpg
 *.db
 file_content*.txt
+*.cpython*

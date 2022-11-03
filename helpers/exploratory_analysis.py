@@ -2,16 +2,20 @@
 # Module for exploratory analysis
 
 import tensorflow as tf
+import re
 
 
-def store_tf_record_structure(dataset, n_take=1):
-    '''Store dataset structure/content in text file'''
-    for idx, sample in enumerate(dataset.take(n_take)):
-        # inspect structure
+def display_structure_of_dataset_item(dataset):
+    '''Function to extract structure from tf.train.Example'''
+    for sample in dataset.take(1):
         example = tf.train.Example()
         example.ParseFromString(sample.numpy())
-        with open(f"file_content_{idx}.txt", 'w') as f:
-            f.write(str(example))
+        regex = re.compile(
+            "key\: (\"[^\"]+\")\s+value \{\s+(\w+) \{\s+value\:\s+([^\n]{1,150})")
+        matches = re.findall(regex, str(example))
+        print(f"tf.train.Example structure:")
+        for element in matches:
+            print(f" - {element[0]} ({element[1]}): {element[2]}")
 
 
 def show_dataset_basics(dataset):
@@ -19,6 +23,7 @@ def show_dataset_basics(dataset):
     print("Dataset Characteristics")
     # image count
     # file count
+    # width / height distribution
     # box number variance / histogram
     # Show classes
     # class variance / histogram

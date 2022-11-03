@@ -6,7 +6,7 @@ import IPython.display as display
 import numpy as np
 import glob
 from helpers.visualization import visualize_tf_record_dataset
-from helpers.exploratory_analysis import store_tf_record_structure, show_dataset_basics
+from helpers.exploratory_analysis import display_structure_of_dataset_item, show_dataset_basics
 
 
 def parse_record(record):
@@ -52,22 +52,20 @@ def transform_record(record):
 def project1_visualize_inspect(tf_record_path_array):
     '''Function to visualize and inspect dataset according to project1'''
     raw_image_dataset = tf.data.TFRecordDataset(tf_record_path_array)
-    store_tf_record_structure(raw_image_dataset)
+    display_structure_of_dataset_item(raw_image_dataset)
     show_dataset_basics(raw_image_dataset)
 
     parsed_image_dataset = raw_image_dataset.map(parse_record)
-
-    # Debug Visu
-    if False:
-        for image_features in parsed_image_dataset.take(3):
-            image_raw = image_features['image/encoded'].numpy()
-            plt.imshow(tf.image.decode_image(image_raw).numpy())
-            plt.show()
-            # display.display(display.Image(data=image_raw))
-
     # Transform to numpy/python if wanted
     transformed_dataset = [transform_record(
         element) for element in parsed_image_dataset]
+
+    # Debug Visu
+    if False:
+        for image_element in transformed_dataset[0:2]:
+            plt.imshow(image_element['image'])
+            plt.show()
+            # display.display(display.Image(data=image_element['image']))
 
     # Visualize
     visualize_tf_record_dataset(
