@@ -20,10 +20,24 @@ def display_structure_of_dataset_item(dataset):
             print(f" - {element[0]} ({element[1]}): {element[2]}")
 
 
-def show_histogramm(vector, title, axs, **hist_args):
+def show_histogramm(ax, vector, title, show_values=True, **hist_args):
     "Plot histogramm of vector values"
-    axs.hist(vector, **hist_args)
-    axs.set_title(title)
+    counts, bins, patches = ax.hist(vector, **hist_args)
+    ax.set_xticks(bins)
+    ax.set_title(title)
+    # Following code to show hist values in diagram taken from
+    # https://stackoverflow.com/questions/6352740/matplotlib-label-each-bin
+    if show_values:
+        bin_centers = 0.5 * np.diff(bins) + bins[:-1]
+        for count, x in zip(counts, bin_centers):
+            # Label the raw counts
+            ax.annotate(str(count), xy=(x, 0), xycoords=('data', 'axes fraction'),
+                        xytext=(0, -18), textcoords='offset points', va='top', ha='center')
+
+            # Label the percentages
+            percent = '%0.0f%%' % (100 * float(count) / counts.sum())
+            ax.annotate(percent, xy=(x, 0), xycoords=('data', 'axes fraction'),
+                        xytext=(0, -32), textcoords='offset points', va='top', ha='center')
     # plt.hist(vector, **hist_args)
     # plt.title(title)
     # plt.show()
@@ -89,23 +103,18 @@ def show_dataset_basics(dataset):
 
     # Histograms
     # plt.figure()
-    # show_histogramm([x['width'] for x in dataset], 'Width distribution')
-    # show_histogramm(widths, 'Image width distribution', plt.gca())
-    # show_histogramm(heights, 'Image height distribution', plt.gca())
-    # show_histogramm(num_boxes_per_image,
-    #                 'Number of boxes per image', plt.gca(), bins=max(num_boxes_per_image))
-    # show_histogramm(classes_list, 'Class distribution',
-    #                 plt.gca(), label=class_text_vec)
+    # show_histogramm(plt.gca(), [x['width'] for x in dataset], 'Width distribution')
 
-    # TODO show all information in one matplotlib subplot
-    fig, axs = plt.subplots(2, 2, figsize=(18, 18))
-    #axs = axs.reshape(4)
-    show_histogramm(widths, 'Image width distribution', axs[0][0])
-    show_histogramm(heights, 'Image height distribution', axs[0][1])
-    show_histogramm(num_boxes_per_image,
-                    'Number of boxes per image', axs[1][0], bins=max(num_boxes_per_image))
-    show_histogramm(classes_list, 'Class distribution',
-                    axs[1][1], label=class_text_vec, bins=max(classes_list)+1)
-    plt.tight_layout()
+    # Show all information in one matplotlib subplot
+    fig, axs = plt.subplots(2, 2, figsize=(18, 18), tight_layout=True)
+    fig.suptitle(
+        f"Dataset ({num_images} images)\nclasses {class_text_vec}", fontsize=14)
+    show_histogramm(axs[0][0], widths, 'Image width distribution', )
+    show_histogramm(axs[0][1], heights, 'Image height distribution')
+    show_histogramm(axs[1][0], num_boxes_per_image,
+                    'Number of boxes per image',  show_values=False, bins=max(num_boxes_per_image))
+    show_histogramm(axs[1][1], classes_list, 'Class distribution',
+                    label=class_text_vec, bins=max(classes_list)+1)
+    plt.subplots_adjust(bottom=0.15)
     plt.show()
     return num_images, class_text_vec, class_count
