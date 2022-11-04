@@ -71,7 +71,8 @@ def project1_visualize_inspect(tf_record_path_array):
     # Visualize
     visualize_tf_record_dataset(
         transformed_dataset,
-        x_max=4, y_max=4,
+        n_show=100,
+        x_max=3, y_max=4,
         show_gt_class_names=True,
         class_names=['', 'car', 'pedestrian', '', 'bike'])
 
@@ -79,6 +80,5 @@ def project1_visualize_inspect(tf_record_path_array):
 if __name__ == "__main__":
     all_tf_records = glob.glob(
         'C:\\Repos\\Udacity\\project1\\data\\processed\\*.tfrecord')
-    sample_path = [all_tf_records[0]]
-    project1_visualize_inspect(all_tf_records[0:5])
+    project1_visualize_inspect(all_tf_records)  # all_tf_records[0:5]
     print("End")

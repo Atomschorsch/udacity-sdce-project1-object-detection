@@ -27,7 +27,8 @@ def visualize_tf_record_dataset(
         show_gt_class_names=False,
         show_pred_class_names=True,
         class_names=[],
-        colors=colors):
+        colors=colors,
+        random=False):
     """
     create a grid visualization of images with color coded bboxes
     args:
@@ -47,6 +48,7 @@ def visualize_tf_record_dataset(
         if axs_idx == 0:
             if sum(subplot_dim) > 2:
                 # Multiple images
+                # TODO make figsize depending on image count
                 fig, axs = plt.subplots(
                     subplot_dim[0], subplot_dim[1], figsize=(18, 18))
                 axs = axs.reshape(
@@ -57,6 +59,7 @@ def visualize_tf_record_dataset(
                 axs = [plt.gca()]
 
         # Handle image
+        # TODO add random visualization
         axs[axs_idx].imshow(data_item['image'])
         axs[axs_idx].get_xaxis().set_visible(False)
         axs[axs_idx].get_yaxis().set_visible(False)
