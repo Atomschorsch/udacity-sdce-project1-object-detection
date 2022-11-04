@@ -20,7 +20,7 @@ def display_structure_of_dataset_item(dataset):
             print(f" - {element[0]} ({element[1]}): {element[2]}")
 
 
-def show_histogramm(ax, vector, title, show_values=True, **hist_args):
+def show_histogramm(ax, vector, title, show_values=True, labels=[], ** hist_args):
     "Plot histogramm of vector values"
     counts, bins, patches = ax.hist(vector, **hist_args)
     ax.set_xticks(bins)
@@ -38,9 +38,13 @@ def show_histogramm(ax, vector, title, show_values=True, **hist_args):
             percent = '%0.0f%%' % (100 * float(count) / counts.sum())
             ax.annotate(percent, xy=(x, 0), xycoords=('data', 'axes fraction'),
                         xytext=(0, -32), textcoords='offset points', va='top', ha='center')
-    # plt.hist(vector, **hist_args)
-    # plt.title(title)
-    # plt.show()
+    # own code
+    if labels:
+        for idx, count in enumerate(counts):
+            ax.annotate(str(labels[idx]), (bins[idx], count))
+# plt.hist(vector, **hist_args)
+# plt.title(title)
+# plt.show()
 
 
 def get_dataset_size(dataset):
@@ -113,8 +117,8 @@ def show_dataset_basics(dataset):
     show_histogramm(axs[0][1], heights, 'Image height distribution')
     show_histogramm(axs[1][0], num_boxes_per_image,
                     'Number of boxes per image',  show_values=False, bins=max(num_boxes_per_image))
-    show_histogramm(axs[1][1], classes_list, 'Class distribution',
-                    label=class_text_vec, bins=max(classes_list)+1)
+    show_histogramm(axs[1][1], classes_list, 'Class distribution', labels=class_text_vec,
+                    bins=[idx-0.5 for idx in range(0, len(class_text_vec)+1)])
     plt.subplots_adjust(bottom=0.15)
     plt.show()
     return num_images, class_text_vec, class_count
