@@ -1,6 +1,7 @@
 # Example from https://stackoverflow.com/questions/65783423/tfrecord-print-image-from-tfrecord-file
 import tensorflow as tf
 import matplotlib.pyplot as plt
+import numpy as np
 import os
 import IPython.display as display
 
@@ -35,12 +36,11 @@ def from_example(tf_record_path):
 
     for image_features in parsed_image_dataset.take(3):
         image_raw = image_features['image/encoded'].numpy()
-        print(
-            f"image/object/bbox/xmin: {image_features['image/object/bbox/xmin']}")
+        box_x_mins = image_features['image/object/bbox/xmin'].values
         tf.image.decode_image(image_raw)
         plt.imshow(tf.image.decode_image(image_raw).numpy())
         plt.show()
-        display.display(display.Image(data=image_raw))
+        # display.display(display.Image(data=image_raw))
 
 
 def read_plot_tf_records(tf_record_path):
