@@ -97,3 +97,9 @@ RUN git clone https://github.com/tensorflow/models.git && \
 # Install google cloud SDK
 RUN curl -sSL https://sdk.cloud.google.com > /tmp/gcl && bash /tmp/gcl --install-dir=~/gcloud --disable-prompts
 ENV PATH="$PATH:/root/gcloud/google-cloud-sdk/bin"
+
+# ALEX: My own adaptions to make it run on my system and to use matplotlib on windwos host together with XLaunch
+# Fix from https://knowledge.udacity.com/questions/889534
+RUN pip install keras==2.5.0rc
+# Fix for using matplotlib
+RUN apt-get install -y python3-tk
