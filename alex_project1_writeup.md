@@ -89,14 +89,17 @@ For this, I have implemented the helper class `helpers/visualization.py` based o
 This can visualize big arbitrary sets of images from the dataset, shows the images in matrix plots and adds the boxes with labels. It is useful to have a closer short look on a bigger set of images and identify abnormalities.
 
 ![Matrix visualization](writeup_files/images/project1_eda_visualization.png)
+![Matrix visualization2](writeup_files/images/project1_eda_matrix_view2.png)
 
 Implications from the visualization:
-- There are areas in the images where almost no objects can be found (upper left / right corner, bottom of image, see yellow area).
+- There are areas in most of the images where almost no objects can be found (upper left / right corner, bottom of image, see yellow area).
 
     ![Image zones](writeup_files/images/project1_eda_image_zones.png)
 
     If this has any impact on our model we will see during training. During augmentation we could somehow move the images a little to check the performance of objects in the yellow areas.
-- Assumption from above regarding occlusion and tiny objects has proven true, and also above mentioned implications.
+- Assumption from above regarding occlusion and tiny objects has proven true, and also above mentioned implications. I don't expect the model to detect the boxes which are only a few pixels in size.
+
+    ![Tiny boxes](writeup_files/images/project1_eda_small_boxes.png)
 
 
 #### Summary of Data analysis
