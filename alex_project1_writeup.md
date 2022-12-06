@@ -6,6 +6,9 @@
 This section should contain a brief description of the project and what we are trying to achieve. Why is object detection such an important component of self driving car systems?
 
 ## Set up
+After heavy difficulties to set up a local system, I have finally managed to run the repo inside of a container on wsl2 on windows. My setup and the difficulties along with necessary fixes are described in [alex_container_instructions.md](alex_container_instructions.md).
+
+I have implemented some convenient scripts to automize some of the steps defined in the project task. These will be mentioned during each step, if relevant.
 This section should contain a brief description of the steps to follow to run the code for this repository.
 
 ## Dataset
