@@ -23,7 +23,7 @@ def display_structure_of_dataset_item(dataset):
 def show_histogramm(ax, vector, title, show_values=True, labels=[], ** hist_args):
     "Plot histogramm of vector values"
     counts, bins, patches = ax.hist(vector, **hist_args)
-    ax.set_xticks(bins)
+    # ax.set_xticks(bins)
     ax.set_title(title)
     # Following code to show hist values in diagram taken from
     # https://stackoverflow.com/questions/6352740/matplotlib-label-each-bin
