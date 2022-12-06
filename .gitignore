@@ -3,8 +3,6 @@
 *.pyc
 *.tfrecords
 *.tfrecord
-*.png
-*.jpg
 *.db
 file_content*.txt
 *.cpython*

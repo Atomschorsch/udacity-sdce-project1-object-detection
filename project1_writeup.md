@@ -12,6 +12,8 @@ This section should contain a brief description of the steps to follow to run th
 ### Dataset analysis
 This section should contain a quantitative and qualitative description of the dataset. It should include images, charts and other visualizations.
 
+![Dataset overview histogram](writeup_files/images/project1_dataset_histogram.png)
+
 ### Cross validation
 This section should detail the cross validation strategy and justify your approach.
 
