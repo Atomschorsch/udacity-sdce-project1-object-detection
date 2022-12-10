@@ -71,8 +71,8 @@ def split_files(source, destination, test_fac = 0.1, val_fac = 0.15):
 
 def split_images(source, destination, test_fac = 0.1, val_fac = 0.15):
     """
-    Create three splits from the processed records. The files should be moved to new folders in the
-    same directory. This folder should be named train, val and test.
+    Create three splits from given processed records in source folders.
+    Contented images will be collected, shuffled, and stored again in three different datasets (tfrecord files) with train, val and test.
 
     args:
         - source [str]: source data directory, contains the processed tf records
