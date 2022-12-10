@@ -13,6 +13,15 @@ from helpers.exploratory_analysis import display_structure_of_dataset_item, show
 from utils import int64_feature, int64_list_feature, \
     bytes_list_feature, bytes_feature, float_list_feature
 
+def write_dataset_to_file(dataset, directory,  filename = 'set', split = 1):
+    """
+    Function to write a dataset to 1 or n different files
+    (Split not yet implemented)
+    """
+    file_name = os.path.join(directory,f'{filename}.tfrecord')
+    with tf.io.TFRecordWriter(file_name) as writer:
+        for example in dataset:
+            writer.write(example.numpy())
 
 def write_processed_dataset_to_file(dataset, directory, filename = 'set', split = 1):
     """
