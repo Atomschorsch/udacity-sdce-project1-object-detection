@@ -9,7 +9,9 @@ if __name__ == "__main__":
     # Start tensorboard
     subprocess.Popen(['python', '-m', 'tensorboard.main','--logdir', model_dir])
 
+
     # Run training (~20 min on RTX4090)
+    # Reference training: python experiments/model_main_tf2.py --model_dir=experiments/reference/ --pipeline_config_path=experiments/reference/pipeline_new.config --checkpoint_dir=experiments/reference/
     os.system(f"python experiments/model_main_tf2.py --model_dir={model_dir} --pipeline_config_path={model_config}")
 
     # Evaluation (~ min on RTX4090)

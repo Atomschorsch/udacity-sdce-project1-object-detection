@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # Example from https://stackoverflow.com/questions/65783423/tfrecord-print-image-from-tfrecord-file
 import tensorflow as tf
 import matplotlib.pyplot as plt
