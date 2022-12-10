@@ -114,11 +114,18 @@ This can visualize big arbitrary sets of images from the dataset, shows the imag
 ![Matrix visualization2](writeup_files/images/eda/project1_eda_matrix_view2.png)
 
 Implications from the visualization:
+- The quality of the data seems quite okay, since multiple environments are mirrored in the data with a lot of variety in different aspects:
+    - Variety in light conditions (day/night)
+    - Variety in image quality (partly occlusions / waterd drops on camera lens)
+    - Variety on different environments (low / high traffic, urban / city / landscape environments, different weather)
+    - Variety on density (no objects / > 60 images), see histograms
+
 - There are areas in most of the images where almost no objects can be found (upper left / right corner, bottom of image, see yellow area).
 
     ![Image zones](writeup_files/images/eda/project1_eda_image_zones.png)
 
     If this has any impact on our model we will see during training. During augmentation we could somehow move the images a little to check the performance of objects in the yellow areas.
+
 - Assumption from above regarding occlusion and tiny objects has proven true, and also above mentioned implications. I don't expect the model to detect the boxes which are only a few pixels in size.
 
     ![Tiny boxes](writeup_files/images/eda/project1_eda_small_boxes.png)
@@ -131,8 +138,21 @@ A short summary of above implications are:
 
 
 
-### Cross validation
+### Data split and Cross validation
 This section should detail the cross validation strategy and justify your approach.
+The task to split the data into a train, val and test subset seemed easy on the first view, but opened some heavy questions.
+Regarding percentages, I have chosen the ones given from the lessons: `75% train, 15% val, 10% test`, to have the most images for training, but keeping two sufficiently large sets for validation and training.
+
+Going strictly for the task description, it would be to just split a number of files into three different sets.  
+The problem I have with this approach, that it creates quite homogenous subsets, which can be very bad for training.  
+If we assume that all images from one recording drive are in one file, and we also assume that during one recording drive we would have mostly similar conditions for all the images regarding weather, environment and object density, this would be mostly similar images in one file.
+So if there would be only one drive (=one file) with a night drive, that would land in the test set, we would not have any images at night in the training set and vice versa.
+
+So the approach I was going for to not split the files, but the file content.  
+I implemented both approaches in `helpers/split.py`:  
+- `split_files`: Take all processed files and divide them into three sets of files
+- `split_images`: Take all processed files, take all the contained images, shuffle the image set and divide them into three sets.
+
 
 ## Training
 ### Reference experiment
