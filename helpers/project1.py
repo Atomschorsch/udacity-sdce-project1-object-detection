@@ -19,6 +19,7 @@ def write_processed_dataset_to_file(dataset, directory, filename = 'set', split 
     Function to write a dataset to 1 or n different files
     (Split not yet implemented)
     """
+    # QUESTION TO TUTOR: Is there a better / more convenient way to just rewrite a loaded dataitem (e.g. for splitting purpose) instead of doing this complicated identical mapping?
     file_name = os.path.join(directory,f'{filename}.tfrecord')
     parsed_train_set = dataset.map(parse_record)
     with tf.io.TFRecordWriter(file_name) as writer:

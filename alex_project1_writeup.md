@@ -123,3 +123,4 @@ This section should highlight the different strategies you adopted to improve yo
 ## Questions to the tutor / corrector
 Since this topic is new for me, I think I have implemented some functions way too complicated, and I guess for most of them are way better and integrated functions already present.
 Could you please check my code, and give some hints, in case there already good library functions for code I have implemented? Especially regarding tfrecord handling, visualization and all the tooling stuff.
+I have also marked some questions in the code with `# QUESTION TO TUTOR`. Could please refer to those?
