@@ -12,6 +12,8 @@ After heavy difficulties to set up a local system, I have finally managed to run
 * routing ports for tensorboard
 * plotting images from matplotlib outside of the container
 
+All timings are measured on a system with Intel I13900K and RTX4090.
+
 My setup including instructions and a description of difficulties along with necessary fixes are described in [alex_container_instructions.md](alex_container_instructions.md).
 
 ### Scripting
@@ -153,6 +155,32 @@ I implemented both approaches in `helpers/split.py`:
 - `split_files`: Take all processed files and divide them into three sets of files
 - `split_images`: Take all processed files, take all the contained images, shuffle the image set and divide them into three sets.
 
+After executing the `create_split.py`, I have the three expected folders at `/mnt/data/` including tfrecord files.
+
+Train set:  
+    ![Train set basics](writeup_files/images/split/train_basic.png)
+    ![Train set histogram](writeup_files/images/split/train_histo.png)
+    ![Train set visualization](writeup_files/images/split/train_set_mixed2.png)
+
+Val set:  
+    ![Val set basics](writeup_files/images/split/val_basic.png)
+    ![Val set histogram](writeup_files/images/split/val_histo.png)
+    ![Val set visualization](writeup_files/images/split/val_set_mixed.png)
+
+Test set:  
+    ![Test set basics](writeup_files/images/split/test_basic.png)
+    ![Test set histogram](writeup_files/images/split/test_histo.png)
+    ![Test set visualization](writeup_files/images/split/test_set_mixed.png)
+
+#### Split summary
+The number of the images sums up to the complete image count of the dataset and also matches the intended percentages.
+By shuffling the images before splitting them up, the distribution of classes is roughly the same in all splits, which is good for training and testing.
+From the visualization of the datasets, we also see that all 3 data splits have a similar distribution and variety of conditions due to the shuffling. All sets contain
+- light: day / night
+- weather: good / bad
+- lens: clean / wet
+- density: few / many objects
+- area: urban / landscape
 
 ## Training
 ### Reference experiment
@@ -161,5 +189,18 @@ This section should detail the results of the reference experiment. It should in
 #### Own adaptions:
 I had to override the model parameter `eval_config.metrics_set` with `coco_detection_metrics`, where the original parameter value `coco_detection_metrics` has thrown the error `'numpy.float64' object cannot be interpreted as an integer`. This fix has been provided via [https://knowledge.udacity.com/questions/657618](https://knowledge.udacity.com/questions/657618).
 
+#### Evaluation of reference training
+Training time: ~20min
+Eval time: ~3 min
 ### Improve on the reference
 This section should highlight the different strategies you adopted to improve your model. It should contain relevant figures and details of your findings.
+
+### First experiment:
+From lesson: Overfit a single batch without lr annealing, by scaling up epochs (from 25000 to 75000) and using constant learning rate (0.002)  
+Training time:    
+-   expected ~ 1 hour  
+-    actual:
+
+Eval time: ~3 min
+
+Result: 
