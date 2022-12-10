@@ -24,6 +24,11 @@ When using any code snippets from stack overflow or other sources during my rese
 
 I have put quite some effort into the docker setup and convenient scripts with the hope to be able to reuse those as templates for future machine learning projects.
 
+## Questions to the tutor / corrector
+Since this topic is new for me, I think I have implemented some functions way too complicated, and I guess for most of them are way better and integrated functions already present.
+Could you please check my code, and give some hints, in case there already good library functions for code I have implemented? Especially regarding tfrecord handling, visualization and all the tooling stuff.
+I have also marked some questions in the code with `# QUESTION TO TUTOR`. Could please refer to those?
+
 ## Dataset
 ### Dataset analysis
 Dataset overview:
@@ -133,11 +138,8 @@ This section should detail the cross validation strategy and justify your approa
 ### Reference experiment
 This section should detail the results of the reference experiment. It should includes training metrics and a detailed explanation of the algorithm's performances.
 
+#### Own adaptions:
+I had to override the model parameter `eval_config.metrics_set` with `coco_detection_metrics`, where the original parameter value `coco_detection_metrics` has thrown the error `'numpy.float64' object cannot be interpreted as an integer`. This fix has been provided via [https://knowledge.udacity.com/questions/657618](https://knowledge.udacity.com/questions/657618).
+
 ### Improve on the reference
 This section should highlight the different strategies you adopted to improve your model. It should contain relevant figures and details of your findings.
-
-
-## Questions to the tutor / corrector
-Since this topic is new for me, I think I have implemented some functions way too complicated, and I guess for most of them are way better and integrated functions already present.
-Could you please check my code, and give some hints, in case there already good library functions for code I have implemented? Especially regarding tfrecord handling, visualization and all the tooling stuff.
-I have also marked some questions in the code with `# QUESTION TO TUTOR`. Could please refer to those?
