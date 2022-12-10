@@ -69,6 +69,32 @@ def split_files(source, destination, test_fac = 0.1, val_fac = 0.15):
 
     return train_path, val_path, test_path
 
+def write_processed_dataset_to_file(dataset, directory, filename = 'set', split = 1):
+    """
+    Function to write a dataset to 1 or n different files
+    (Split not yet implemented)
+    """
+    file_name = os.path.join(directory,f'{filename}.tfrecord')
+    parsed_train_set = dataset.map(parse_record)
+    with tf.io.TFRecordWriter(file_name) as writer:
+        for idx, data in enumerate(parsed_train_set):
+            # Rewrite records
+            tf_example = tf.train.Example(features=tf.train.Features(feature={
+                'image/height': int64_feature(data['image/height'].numpy()),
+                'image/width': int64_feature(data['image/width'].numpy()),
+                'image/filename': bytes_feature(data['image/filename'].numpy()),
+                'image/source_id': bytes_feature(data['image/source_id'].numpy()),
+                'image/encoded': bytes_feature(data['image/encoded'].numpy()),
+                'image/format': bytes_feature(data['image/format'].numpy()),
+                'image/object/bbox/xmin': float_list_feature(data['image/object/bbox/xmin'].values.numpy()),
+                'image/object/bbox/xmax': float_list_feature(data['image/object/bbox/xmax'].values.numpy()),
+                'image/object/bbox/ymin': float_list_feature(data['image/object/bbox/ymin'].values.numpy()),
+                'image/object/bbox/ymax': float_list_feature(data['image/object/bbox/ymax'].values.numpy()),
+                'image/object/class/text': bytes_list_feature(data['image/object/class/text'].values.numpy()),
+                'image/object/class/label': int64_list_feature(data['image/object/class/label'].values.numpy()),
+            }))
+            writer.write(tf_example.SerializeToString())
+
 def split_images(source, destination, test_fac = 0.1, val_fac = 0.15):
     """
     Create three splits from the processed records. The files should be moved to new folders in the
@@ -102,39 +128,13 @@ def split_images(source, destination, test_fac = 0.1, val_fac = 0.15):
     val_dataset = test_dataset.skip(n_test_images)
     test_dataset = test_dataset.take(n_test_images)
 
+    # Write splitted data
     ensure_dir_exsists_empty(train_path)
-    # Following code for writing is taken from download_process.py
-    file_name = os.path.join(train_path,'datafile.tfrecord')
-    parsed_train_set = train_dataset.map(parse_record)
-    with tf.io.TFRecordWriter(file_name) as writer:
-        for idx, data in enumerate(parsed_train_set):
-            # we are only saving every 10 frames to reduce the number of similar
-            # images. Remove this line if you have enough space to work with full
-            # temporal resolution data.
-            if idx % 10 == 0:
-                # frame = open_dataset.Frame()
-                # frame.ParseFromString(bytearray(data.numpy()))
-                # encoded_jpeg, annotations = parse_frame(frame)
-                # decoded_data = data.map({
-                #     'image/encoded': tf.io.FixedLenFeature([], tf.string),
-                #     })
-                # filename = decoded_data['filename'].replace('.tfrecord', f'_{idx}.tfrecord')
-                # tf_example = create_tf_example(filename, decoded_data['image/encoded'], annotations)
-                tf_example = tf.train.Example(features=tf.train.Features(feature={
-                    'image/height': int64_feature(data['image/height'].numpy()),
-                    'image/width': int64_feature(data['image/width'].numpy()),
-                    'image/filename': bytes_feature(data['image/filename'].numpy()),
-                    'image/source_id': bytes_feature(data['image/source_id'].numpy()),
-                    'image/encoded': bytes_feature(data['image/encoded'].numpy()),
-                    'image/format': bytes_feature(data['image/format'].numpy()),
-                    'image/object/bbox/xmin': float_list_feature(data['image/object/bbox/xmin'].values.numpy()),
-                    'image/object/bbox/xmax': float_list_feature(data['image/object/bbox/xmax'].values.numpy()),
-                    'image/object/bbox/ymin': float_list_feature(data['image/object/bbox/ymin'].values.numpy()),
-                    'image/object/bbox/ymax': float_list_feature(data['image/object/bbox/ymax'].values.numpy()),
-                    'image/object/class/text': bytes_list_feature(data['image/object/class/text'].values.numpy()),
-                    'image/object/class/label': int64_list_feature(data['image/object/class/label'].values.numpy()),
-                }))
-                writer.write(tf_example.SerializeToString())
+    write_processed_dataset_to_file(train_dataset, train_path, filename = 'train_set')
+    ensure_dir_exsists_empty(val_path)
+    write_processed_dataset_to_file(val_dataset, val_path, filename = 'val_set')
+    ensure_dir_exsists_empty(test_path)
+    write_processed_dataset_to_file(test_dataset, test_path, filename = 'test_set')
 
     return train_path, val_path, test_path
 
@@ -167,10 +167,16 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     logger = get_module_logger(__name__)
+
     logger.info('Creating splits...')
-    train_path, val_path, test_path = split(args.source, args.destination, test_fac = 0.1, val_fac = 0.15)
+    # split function temporarily deactivated to just view the datasets
+    # train_path, val_path, test_path = split(args.source, args.destination, test_fac = 0.1, val_fac = 0.15)
+    train_path = os.path.join(args.destination, 'train')
+    val_path = os.path.join(args.destination, 'val')
+    test_path = os.path.join(args.destination, 'test')
 
     # Visualize different datasets to inspect on homogenities
+    logger.info('Inspecting splits...')
     project1_visualize_inspect(glob.glob(os.path.join(train_path,'*.tfrecord')))
     project1_visualize_inspect(glob.glob(os.path.join(val_path,'*.tfrecord')))
     project1_visualize_inspect(glob.glob(os.path.join(test_path,'*.tfrecord')))
