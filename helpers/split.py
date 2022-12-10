@@ -7,7 +7,6 @@ import random
 import shutil
 
 from helpers.exploratory_analysis import get_dataset_size
-from helpers.project1 import write_processed_dataset_to_file, write_dataset_to_file
 import tensorflow as tf
 
 def copy_tf_records(file_list, destination):
@@ -28,6 +27,16 @@ def ensure_dir_exsists_empty(dir_path):
     if os.path.exists(dir_path):
         shutil.rmtree(dir_path)
     os.makedirs(dir_path)
+
+def write_dataset_to_file(dataset, directory,  filename = 'set', split = 1):
+    """
+    Function to write a dataset to 1 or n different files
+    (Split not yet implemented)
+    """
+    file_name = os.path.join(directory,f'{filename}.tfrecord')
+    with tf.io.TFRecordWriter(file_name) as writer:
+        for example in dataset:
+            writer.write(example.numpy())
 
 def split_files(source, destination, test_fac = 0.1, val_fac = 0.15):
     """
@@ -105,12 +114,9 @@ def split_images(source, destination, test_fac = 0.1, val_fac = 0.15):
     # Write splitted data
     ensure_dir_exsists_empty(train_path)
     write_dataset_to_file(train_dataset, train_path, filename = 'train_set')
-    # write_processed_dataset_to_file(train_dataset, train_path, filename = 'train_set')
     ensure_dir_exsists_empty(val_path)
     write_dataset_to_file(val_dataset, val_path, filename = 'val_set')
-    # write_processed_dataset_to_file(val_dataset, val_path, filename = 'val_set')
     ensure_dir_exsists_empty(test_path)
     write_dataset_to_file(test_dataset, test_path, filename = 'test_set')
-    # write_processed_dataset_to_file(test_dataset, test_path, filename = 'test_set')
 
     return train_path, val_path, test_path

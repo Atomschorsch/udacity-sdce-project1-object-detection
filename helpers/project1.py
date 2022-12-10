@@ -4,51 +4,11 @@
 # Example from https://stackoverflow.com/questions/65783423/tfrecord-print-image-from-tfrecord-file
 import tensorflow as tf
 import matplotlib.pyplot as plt
-import os
 import IPython.display as display
 import numpy as np
 import glob
 from helpers.visualization import visualize_tf_record_dataset
 from helpers.exploratory_analysis import display_structure_of_dataset_item, show_dataset_basics
-from utils import int64_feature, int64_list_feature, \
-    bytes_list_feature, bytes_feature, float_list_feature
-
-def write_dataset_to_file(dataset, directory,  filename = 'set', split = 1):
-    """
-    Function to write a dataset to 1 or n different files
-    (Split not yet implemented)
-    """
-    file_name = os.path.join(directory,f'{filename}.tfrecord')
-    with tf.io.TFRecordWriter(file_name) as writer:
-        for example in dataset:
-            writer.write(example.numpy())
-
-def write_processed_dataset_to_file(dataset, directory, filename = 'set', split = 1):
-    """
-    Function to write a dataset to 1 or n different files
-    (Split not yet implemented)
-    """
-    # QUESTION TO TUTOR: Is there a better / more convenient way to just rewrite a loaded dataitem (e.g. for splitting purpose) instead of doing this complicated identical mapping?
-    file_name = os.path.join(directory,f'{filename}.tfrecord')
-    parsed_train_set = dataset.map(parse_record)
-    with tf.io.TFRecordWriter(file_name) as writer:
-        for idx, data in enumerate(parsed_train_set):
-            # Rewrite records
-            tf_example = tf.train.Example(features=tf.train.Features(feature={
-                'image/height': int64_feature(data['image/height'].numpy()),
-                'image/width': int64_feature(data['image/width'].numpy()),
-                'image/filename': bytes_feature(data['image/filename'].numpy()),
-                'image/source_id': bytes_feature(data['image/source_id'].numpy()),
-                'image/encoded': bytes_feature(data['image/encoded'].numpy()),
-                'image/format': bytes_feature(data['image/format'].numpy()),
-                'image/object/bbox/xmin': float_list_feature(data['image/object/bbox/xmin'].values.numpy()),
-                'image/object/bbox/xmax': float_list_feature(data['image/object/bbox/xmax'].values.numpy()),
-                'image/object/bbox/ymin': float_list_feature(data['image/object/bbox/ymin'].values.numpy()),
-                'image/object/bbox/ymax': float_list_feature(data['image/object/bbox/ymax'].values.numpy()),
-                'image/object/class/text': bytes_list_feature(data['image/object/class/text'].values.numpy()),
-                'image/object/class/label': int64_list_feature(data['image/object/class/label'].values.numpy()),
-            }))
-            writer.write(tf_example.SerializeToString())
 
 def parse_record(record):
     '''Function to parse one record.'''
@@ -70,6 +30,9 @@ def parse_record(record):
 
 
 def transform_record(record):
+    """
+    Function to transform one record into numpy dict with decoded image
+    """
     ret_dict = {
         'image': tf.image.decode_image(record['image/encoded']).numpy(),
         'filename': record['image/filename'].numpy(),
@@ -120,6 +83,6 @@ def project1_visualize_inspect(tf_record_path_array):
 
 if __name__ == "__main__":
     all_tf_records = glob.glob(
-        'C:\\Repos\\Udacity\\project1\\data\\processed\\*.tfrecord')
+        '/mnt/data/processed/*.tfrecord')
     project1_visualize_inspect(all_tf_records)  # all_tf_records[0:5]
     print("End")

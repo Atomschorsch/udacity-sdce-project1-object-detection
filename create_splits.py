@@ -39,7 +39,7 @@ if __name__ == "__main__":
     logger = get_module_logger(__name__)
 
     logger.info('Creating splits...')
-    # split function temporarily deactivated to just view the datasets and not recreate
+    # TUTOR split function temporarily deactivated to just view the datasets and not recreate
     # train_path, val_path, test_path = split(args.source, args.destination, test_fac = 0.1, val_fac = 0.15)
     train_path = os.path.join(args.destination, 'train')
     val_path = os.path.join(args.destination, 'val')
