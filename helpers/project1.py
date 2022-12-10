@@ -29,7 +29,7 @@ def parse_record(record):
     return tf.io.parse_single_example(record, image_feature_description)
 
 
-def transform_record(record):
+def transform_record(record, box_in_pixel_pos = False):
     """
     Function to transform one record into numpy dict with decoded image
     """
@@ -41,12 +41,20 @@ def transform_record(record):
         'classes_text': record['image/object/class/text'].values.numpy(),
         'classes': record['image/object/class/label'].values.numpy()
     }
-    # boxes in data as [0,1], has to be multiplied with width / height
+
+    # Handle boxes
+    width_factor = 1
+    height_factor = 1
+    # if boxes in data as [0,1], has to be multiplied with width / height
+    if not box_in_pixel_pos:
+        width_factor = ret_dict['width']
+        height_factor = ret_dict['height']
+
     boxes_odd = np.array([
-        record['image/object/bbox/ymin'].values.numpy()*ret_dict['height'],
-        record['image/object/bbox/xmin'].values.numpy()*ret_dict['width'],
-        record['image/object/bbox/ymax'].values.numpy()*ret_dict['height'],
-        record['image/object/bbox/xmax'].values.numpy()*ret_dict['width'],
+        record['image/object/bbox/ymin'].values.numpy()*height_factor,
+        record['image/object/bbox/xmin'].values.numpy()*width_factor,
+        record['image/object/bbox/ymax'].values.numpy()*height_factor,
+        record['image/object/bbox/xmax'].values.numpy()*width_factor,
     ])
     ret_dict['boxes'] = [boxes_odd[:, idx]
                          for idx in range(boxes_odd.shape[1])]

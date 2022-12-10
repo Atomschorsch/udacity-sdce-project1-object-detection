@@ -1,6 +1,9 @@
 #!/usr/bin/python
 # Module for exploratory analysis
-
+import matplotlib
+# Necessary to see matplotlib outside of container
+import tkinter
+matplotlib.use('TKAgg')
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np

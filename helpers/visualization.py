@@ -91,34 +91,6 @@ def visualize_tf_record_dataset(
     plt.tight_layout()
     plt.show()
 
-
-def convert_tf_record_metadata(image_item):
-    '''Current metadata of current imaga to dict'''
-    # {
-    #     "filename": "\\\\spacestation2\home\Drive\Projekte\Tensorflow\CatsAndDogs\custom\cat2.jpg",
-    #     "boxes": [[10,10,50,50],[100,100,110,120]],
-    #     "classes": [2,1],
-    # }
-    width = image_item['image/width'].numpy()
-    height = image_item['image/width'].numpy()
-    box_x_mins = image_item['image/object/bbox/xmin'].values.numpy()*width
-    box_x_maxs = image_item['image/object/bbox/xmax'].values.numpy()*width
-    box_y_mins = image_item['image/object/bbox/ymin'].values.numpy()*height
-    box_y_maxs = image_item['image/object/bbox/ymax'].values.numpy()*height
-    classes_text = image_item['image/object/class/text'].values.numpy()
-    classes = image_item['image/object/class/label'].values.numpy()
-    ret_dict = {
-        'classes_text': classes_text,
-        'classes': classes
-    }
-    boxes = []
-    for idx in range(len(box_x_mins)):
-        boxes.append([box_y_mins[idx], box_x_mins[idx],
-                     box_y_maxs[idx], box_x_maxs[idx]])
-    ret_dict['boxes'] = boxes
-    return ret_dict
-
-
 def calculate_box_size(box):
     return (box[3]-box[1])*(box[2]-box[0])
 
