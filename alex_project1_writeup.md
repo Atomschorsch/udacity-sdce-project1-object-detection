@@ -17,8 +17,8 @@ Dataset overview:
 After using the provided download_process.py script, the data consists of 100 tfrecord files with a total of 1997 images and labels, taken from the Waymo Open dataset.
 
 To be honest I had quite some difficulties with the tfrecord format and had to do quite some research and test scripts to fully understand it. I played around with it in the file
-`alex_print_image_project1.py`.
-After that, I added some helper classes to get a first impression of the data and to visualize it to my demands:
+`alex_print_image_project1.py`, which was then later moved to `helpers/project1.py` for project1 specific functionality.
+After that, I tried to identify generic / common parts (which are not project1 specific) and added some helper classes to get a first impression of the data and to visualize it to my demands:
 - `./helpers/exploratory_analysis.py`
 - `./helpers/visualization.py`
 
@@ -118,3 +118,8 @@ This section should detail the results of the reference experiment. It should in
 
 ### Improve on the reference
 This section should highlight the different strategies you adopted to improve your model. It should contain relevant figures and details of your findings.
+
+
+## Questions to the tutor / corrector
+Since this topic is new for me, I think I have implemented some functions way too complicated, and I guess for most of them are way better and integrated functions already present.
+Could you please check my code, and give some hints, in case there already good library functions for code I have implemented? Especially regarding tfrecord handling, visualization and all the tooling stuff.

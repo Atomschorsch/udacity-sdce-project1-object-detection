@@ -2,6 +2,10 @@
 # Module for visualization tooling
 
 # from utils import get_data
+import matplotlib
+# Necessary to see matplotlib outside of container
+import tkinter
+matplotlib.use('TKAgg')
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import os
@@ -10,6 +14,7 @@ import tensorflow as tf
 # Data generator
 import json
 import numpy as np
+
 
 colors = ['y', 'r', 'g', 'b', 'w']
 
