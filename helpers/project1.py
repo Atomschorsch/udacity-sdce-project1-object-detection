@@ -10,7 +10,35 @@ import numpy as np
 import glob
 from helpers.visualization import visualize_tf_record_dataset
 from helpers.exploratory_analysis import display_structure_of_dataset_item, show_dataset_basics
+from utils import int64_feature, int64_list_feature, \
+    bytes_list_feature, bytes_feature, float_list_feature
 
+
+def write_processed_dataset_to_file(dataset, directory, filename = 'set', split = 1):
+    """
+    Function to write a dataset to 1 or n different files
+    (Split not yet implemented)
+    """
+    file_name = os.path.join(directory,f'{filename}.tfrecord')
+    parsed_train_set = dataset.map(parse_record)
+    with tf.io.TFRecordWriter(file_name) as writer:
+        for idx, data in enumerate(parsed_train_set):
+            # Rewrite records
+            tf_example = tf.train.Example(features=tf.train.Features(feature={
+                'image/height': int64_feature(data['image/height'].numpy()),
+                'image/width': int64_feature(data['image/width'].numpy()),
+                'image/filename': bytes_feature(data['image/filename'].numpy()),
+                'image/source_id': bytes_feature(data['image/source_id'].numpy()),
+                'image/encoded': bytes_feature(data['image/encoded'].numpy()),
+                'image/format': bytes_feature(data['image/format'].numpy()),
+                'image/object/bbox/xmin': float_list_feature(data['image/object/bbox/xmin'].values.numpy()),
+                'image/object/bbox/xmax': float_list_feature(data['image/object/bbox/xmax'].values.numpy()),
+                'image/object/bbox/ymin': float_list_feature(data['image/object/bbox/ymin'].values.numpy()),
+                'image/object/bbox/ymax': float_list_feature(data['image/object/bbox/ymax'].values.numpy()),
+                'image/object/class/text': bytes_list_feature(data['image/object/class/text'].values.numpy()),
+                'image/object/class/label': int64_list_feature(data['image/object/class/label'].values.numpy()),
+            }))
+            writer.write(tf_example.SerializeToString())
 
 def parse_record(record):
     '''Function to parse one record.'''
