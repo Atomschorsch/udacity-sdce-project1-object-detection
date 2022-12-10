@@ -4,29 +4,45 @@
 
 ## Project overview
 Object detection is one of the main crucial tasks during video perception in self driving cars or driver assistance systems.
-In this project, each necessary step from set up and data analysis due to cross validation, training, evaluation and augmentation shall be practiced and implemented, due to the lessons learned in the first chapter.
+In this project, each necessary step from set up and data analysis due to cross validation, training, evaluation and augmentation shall be practiced and implemented, due to the lessons learned in the first chapter and with example images from the Waymo Open dataset.
 
 ## Set up
-After heavy difficulties to set up a local system, I have finally managed to run the repo inside of a container on wsl2 on windows. My setup and the difficulties along with necessary fixes are described in [alex_container_instructions.md](alex_container_instructions.md).
+After heavy difficulties to set up a local system, I have finally managed to run the repo inside of a container on wsl2 on windows with 
+* GPU usage
+* routing ports for tensorboard
+* plotting images from matplotlib outside of the container
 
-I have implemented some convenient scripts and helper classes (./helpers) to automize some of the steps defined in the project task and to reuse code for re-occuring tasks. These will be mentioned during each step, if relevant.
+My setup including instructions and a description of difficulties along with necessary fixes are described in [alex_container_instructions.md](alex_container_instructions.md).
+
+### Scripting
+I have implemented some convenient scripts and helper classes (`./helpers`) to automize some of the steps defined in the project task and to reuse code for re-occuring tasks. These will be mentioned during each step, if relevant.
+
+### Code versioning
+During the implementation, I have used git / local gitlab instance for commmits and branches to save my increments. The progress and implementation steps should be understandable and visible via `gitk` or in any git gui.
+### External sources
+When using any code snippets from stack overflow or other sources during my research, I have tried to mark this or refer to the source in the code. In case I have forgotten or overseen some of them, I apologize for this.
+
+I have put quite some effort into the docker setup and convenient scripts with the hope to be able to reuse those as templates for future machine learning projects.
 
 ## Dataset
 ### Dataset analysis
 Dataset overview:
 After using the provided download_process.py script, the data consists of 100 tfrecord files with a total of 1997 images and labels, taken from the Waymo Open dataset.
 
-To be honest I had quite some difficulties with the tfrecord format and had to do quite some research and test scripts to fully understand it. I played around with it in the file
+To be honest I had quite some difficulties with the tfrecord format and had to do quite some research and test scripts to get along with it. I played around with it in the file
 `alex_print_image_project1.py`, which was then later moved to `helpers/project1.py` for project1 specific functionality.
+
 After that, I tried to identify generic / common parts (which are not project1 specific) and added some helper classes to get a first impression of the data and to visualize it to my demands:
 - `./helpers/exploratory_analysis.py`
 - `./helpers/visualization.py`
 
 Coming to the actual analysis and its implications:
+
 My implemented helper class `./helpers/exploratory_analysis.py` contains the functions
 - `get_classes_info`:
 
-    Show data attributes of data stored in tfrecord file. This was necessary for me to understand what fields are available in an unknown tfrecord and to understand how to decode it. It also shows the number of files, the existing classes and their numbers.
+    Show data attributes of data stored in tfrecord file. This was necessary for me to understand what fields are available in an unknown tfrecord and to understand how to decode it. (Later I learned, that this is part of the proto files, but I could not find them in my repo.)
+
     Output:
     ```python
     tf.train.Example structure:
@@ -46,6 +62,7 @@ My implemented helper class `./helpers/exploratory_analysis.py` contains the fun
 - `show_dataset_basics`
 
     This prints the basic dataset information (number of images, the existing classes and their distribution) to the console. It will also show some basic histograms on width, height and class distribution:
+
     Output:
     ```python
     Dataset info:
