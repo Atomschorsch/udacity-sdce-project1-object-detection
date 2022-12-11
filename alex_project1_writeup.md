@@ -198,7 +198,7 @@ Most likely, this initial experiment did not yield optimal results. However, you
 
 
 
-### First experiment:
+### First experiment experiment0:
 From lesson: Overfit a single batch without lr annealing, by scaling up epochs (from 25000 to 75000) and using constant learning rate (0.002)  
 Training time:    
 -   expected ~ 1 hour  
@@ -207,7 +207,20 @@ Training time:
 Eval time: ~ 6 min
 
 Result:
+This has shown significant improvment right from the beginning. The impacting factor seems to be the adaption of the learning rate.
 # TODO
+
+### Second experiment1:
+Implication from last experiment: adaptions on learning rate and optimizer seem to have a big impact on performance. We will now try `rms_prop_optimizer` with `exponential_decay_learning_rate`.  
+Training time: ~1:15
+
+Result:
+# TODO
+Performance worse thatn experiment0
+
+### Third experiment2:
+Implication from last experiment: Don't use rms_prop_optimizer. Try `adam_optimizer`  with `exponential_decay_learning_rate`, only 50000 steps. 
+
 
 
 # TODO
