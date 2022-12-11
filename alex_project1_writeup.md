@@ -208,18 +208,38 @@ Eval time: ~ 6 min
 
 Result:
 This has shown significant improvment right from the beginning. The impacting factor seems to be the adaption of the learning rate.
-# TODO
 
 ### Second experiment1:
 Implication from last experiment: adaptions on learning rate and optimizer seem to have a big impact on performance. We will now try `rms_prop_optimizer` with `exponential_decay_learning_rate`.  
 Training time: ~1:15
 
 Result:
-# TODO
-Performance worse thatn experiment0
+Performance worse than experiment0
 
 ### Third experiment2:
 Implication from last experiment: Don't use rms_prop_optimizer. Try `adam_optimizer`  with `exponential_decay_learning_rate`, only 50000 steps. 
+
+Performance is also worse than experiment0
+-> Choice for `momentum_optimizer ` with lr annealing.
+
+
+### Fourth experiment3:
+After test of all three available optimizers, the choice falls for `momentum_optimizer` with lr annealing, since loss seems to stagnate from step 40000 in experiment0
+```
+momentum_optimizer    {
+      learning_rate {
+        exponential_decay_learning_rate  {
+          initial_learning_rate: 0.002
+          decay_steps: 10000
+          decay_factor: 0.95
+        }}}
+...
+num_steps: 60000
+```
+Also non-max-suppression could help on big groups of objects that we have in the dataset, but it looks like this is already enabled in the pipeline config via `batch_non_max_suppression`. At [post_processing.prot](https://github.com/tensorflow/models/blob/master/research/object_detection/protos/post_processing.proto) I have also found a parameter `soft_nms_sigma` which I thought would be related to soft non-max-suppression, but I have not found any instructions on how to configure this kind of sigma value and what it implies.
+
+Result:  
+
 
 
 
