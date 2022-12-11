@@ -236,12 +236,40 @@ momentum_optimizer    {
 ...
 num_steps: 60000
 ```
-Also non-max-suppression could help on big groups of objects that we have in the dataset, but it looks like this is already enabled in the pipeline config via `batch_non_max_suppression`. At [post_processing.prot](https://github.com/tensorflow/models/blob/master/research/object_detection/protos/post_processing.proto) I have also found a parameter `soft_nms_sigma` which I thought would be related to soft non-max-suppression, but I have not found any instructions on how to configure this kind of sigma value and what it implies.
-
-Result:  
-
+Also non-max-suppression could help on big groups of objects that we have in the dataset, but it looks like this is already enabled in the pipeline config via `batch_non_max_suppression`. At [post_processing.prot](https://github.com/tensorflow/models/blob/master/research/object_detection/protos/post_processing.proto) I have also found a parameter `soft_nms_sigma` which I thought would be related to soft non-max-suppression, but I have not found any instructions on how to configure this kind of sigma value and what it implies.  
+Regarding `batch_size`. I would keep it as is, since I don't have any more memory available in my local machine.  
 
 
+Result:
+Very similar to experiment0 but little worse performance
 
-# TODO
-try soft nms (non max suppression) to improve on groups of overlapping objects
+### Fifth experiment4:
+Use same optimizer settings like in experiment0, but adapting classification_loss to `weighted_sigmoid` instead of `weighted_sigmoid_focal`
+
+Result:
+
+
+# TODO noch testen
+- Model architecture adaptions
+    - classification_loss
+    - Dropout
+    - anderen initializer, z.B. `variance_scaling_initializer`  oder `random_normal_initializer`
+    - andere activation: z.B. `RELU` oder `SWISH` statt `RELU_6`
+- Bestes Netz noch weiter trainieren (resume training)
+
+
+### Summary of experiments
+
+## Augmentations
+[List of available augmentations](https://github.com/tensorflow/models/blob/master/research/object_detection/protos/preprocessor.proto)
+- flip: RandomHorizontalFlip
+- brightness: RandomAdjustBrightness
+- RandomJitterBoxes 
+- crop
+- color
+- move
+- AutoAugmentImage ?
+
+## Export
+
+## Video
