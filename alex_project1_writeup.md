@@ -258,17 +258,25 @@ Canceled early due to way worse performance from start.
 -> LEave classification_loss as is
 
 ### Seventh experiment6:
-Diff to experiment0: Use `random_normal_initializer` instead of `truncated_normal_initializer`
+Diff to experiment0: Use different initializer, `random_normal_initializer` instead of `truncated_normal_initializer`
 
 Result: 
+TODO add results here
+Not that bad, will resume training with more 40000 (to also test the feature of resuming a training later.  Pipeline file is named `pipeline_resume.config`)
+TODO add resuming results here.
+Still worse than experiment0
 
+### Seventh experiment6:
+Diff to experiment0: Use different activation, `SWISH` instead of `RELU_6`
+
+Result: 
 
 # TODO noch testen
 - Model architecture adaptions
     - X classification_loss 
     - Dropout
-    - anderen initializer, z.B. `variance_scaling_initializer`  oder `random_normal_initializer`
-    - andere activation: z.B. `RELU` oder `SWISH` statt `RELU_6`
+    - X anderen initializer, z.B. `variance_scaling_initializer`  oder `random_normal_initializer`
+    - X andere activation: z.B. `RELU` oder `SWISH` statt `RELU_6`
 - Bestes Netz noch weiter trainieren (resume training)
 
 
