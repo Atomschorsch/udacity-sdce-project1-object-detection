@@ -80,6 +80,6 @@ def project1_visualize_inspect(tf_record_path_array):
 
 if __name__ == "__main__":
     all_tf_records = glob.glob(
-        'C:\\Repos\\Udacity\\project1\\data\\processed\\*.tfrecord')
+        '/mnt/data/processed/*.tfrecord')
     project1_visualize_inspect(all_tf_records)  # all_tf_records[0:5]
     print("End")
