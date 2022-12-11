@@ -16,12 +16,12 @@ All timings are measured on a system with Intel I13900K and RTX4090.
 
 My setup including instructions and a description of difficulties along with necessary fixes are described in [alex_container_instructions.md](alex_container_instructions.md).
 
-### Scripting
+### **Scripting**
 I have implemented some convenient scripts and helper classes (`./helpers`) to automize some of the steps defined in the project task and to reuse code for re-occuring tasks. These will be mentioned during each step, if relevant.
 
-### Code versioning
+### **Code versioning**
 During the implementation, I have used git / local gitlab instance for commmits and branches to save my increments. The progress and implementation steps should be understandable and visible via `gitk` or in any git gui.
-### External sources
+### **External sources**
 When using any code snippets from stack overflow or other sources during my research, I have tried to mark this or refer to the source in the code. In case I have forgotten or overseen some of them, I apologize for this.
 
 I have put quite some effort into the docker setup and convenient scripts with the hope to be able to reuse those as templates for future machine learning projects.
@@ -33,7 +33,7 @@ I have also marked some questions in the code with `# QUESTION TO TUTOR`. Could 
 
 ## Dataset
 ### Dataset analysis
-Dataset overview:
+**Dataset overview:**  
 After using the provided download_process.py script, the data consists of 100 tfrecord files with a total of 1997 images and labels, taken from the Waymo Open dataset.
 
 To be honest I had quite some difficulties with the tfrecord format and had to do quite some research and test scripts to get along with it. I played around with it in the file
@@ -43,7 +43,7 @@ After that, I tried to identify generic / common parts (which are not project1 s
 - `./helpers/exploratory_analysis.py`
 - `./helpers/visualization.py`
 
-Coming to the actual analysis and its implications:
+**Analysis and visualization functions:**
 
 My implemented helper class `./helpers/exploratory_analysis.py` contains the functions
 - `get_classes_info`:
@@ -85,7 +85,7 @@ My implemented helper class `./helpers/exploratory_analysis.py` contains the fun
 
 Both functions are called within the project task `Exploratory Data Analysis.ipynb`.
 
-#### Implications:
+#### **Implications:**
 - Available information per image:
     - actual image
     - format
@@ -100,16 +100,16 @@ Both functions are called within the project task `Exploratory Data Analysis.ipy
     - -> TODO further implications
 - All images have the same resolution (width x height). This means we don't need any additional layers in our model to adapt to differen image sizes
 - The histogram "Number of boxes per image" in above diagram shows that there are quite a lot of images with > 30 boxes / objects, even some with > 70 boxes. This means that we will probably have very crowded images with a lot of occlusions, and maybe also a lot of tiny objects.
-    - -> TODO implication? Algorithms from chapter?
-- There are a lot of vehicle objects, only a few pedestrians and almost no cyclists (f). So it is doubtable that the model will perform well on unknown images for pedestrian or cyclist detection, if there are only 4 images to learn what a cyclist is, even worse if those 4 images would all be in the eval or test set.
-    - --> TODO implication: use cross validation?
+    - We could try soft nms (non max suppression) in the improvment section.
+- There are a lot of vehicle objects, only a few pedestrians and almost no cyclists (f). So it is doubtable that the model will perform well on unknown images for pedestrian or cyclist detection
+    - --> We should shortly check that we have a good class distribution in each of the data splits.
 
 Having analyzed the basics and gain some information about data distribution and quality, we need to have a closer look into the data itself:
 - What is the quality of our data?
 - Do we need a cleanup of the data?
 - Are there outliers?
 
-For this, I have implemented the helper class `helpers/visualization.py` based on one of the practices we have made during the first chapter.
+For this, I have implemented the helper class `helpers/visualization.py` based on one of the exercises we have made during the first chapter.  
 This can visualize big arbitrary sets of images from the dataset, shows the images in matrix plots and adds the boxes with labels. It is useful to have a closer short look on a bigger set of images and identify abnormalities.
 
 ![Matrix visualization](writeup_files/images/eda/project1_eda_visualization.png)
@@ -132,14 +132,6 @@ Implications from the visualization:
 
     ![Tiny boxes](writeup_files/images/eda/project1_eda_small_boxes.png)
 
-
-#### Summary of Data analysis
-
-A short summary of above implications are:
-- --> TODO summary of implications
-
-
-
 ### Data split and Cross validation
 This section should detail the cross validation strategy and justify your approach.
 The task to split the data into a train, val and test subset seemed easy on the first view, but opened some heavy questions.
@@ -157,24 +149,24 @@ I implemented both approaches in `helpers/split.py`:
 
 After executing the `create_split.py`, I have the three expected folders at `/mnt/data/` including tfrecord files.
 
-Train set:  
+**Train set:**  
     ![Train set basics](writeup_files/images/split/train_basic.png)
     ![Train set histogram](writeup_files/images/split/train_histo.png)
     ![Train set visualization](writeup_files/images/split/train_set_mixed2.png)
 
-Val set:  
+**Val set:**  
     ![Val set basics](writeup_files/images/split/val_basic.png)
     ![Val set histogram](writeup_files/images/split/val_histo.png)
     ![Val set visualization](writeup_files/images/split/val_set_mixed.png)
 
-Test set:  
+**Test set:**  
     ![Test set basics](writeup_files/images/split/test_basic.png)
     ![Test set histogram](writeup_files/images/split/test_histo.png)
     ![Test set visualization](writeup_files/images/split/test_set_mixed.png)
 
-#### Split summary
-The number of the images sums up to the complete image count of the dataset and also matches the intended percentages.
-By shuffling the images before splitting them up, the distribution of classes is roughly the same in all splits, which is good for training and testing.
+#### **Split summary**
+The number of the images sums up to the complete image count of the dataset and also matches the intended percentages.  
+By shuffling the images before splitting them up, the distribution of classes is roughly the same in all splits, which is good for training and testing.  
 From the visualization of the datasets, we also see that all 3 data splits have a similar distribution and variety of conditions due to the shuffling. All sets contain
 - light: day / night
 - weather: good / bad
@@ -190,17 +182,33 @@ This section should detail the results of the reference experiment. It should in
 I had to override the model parameter `eval_config.metrics_set` with `coco_detection_metrics`, where the original parameter value `coco_detection_metrics` has thrown the error `'numpy.float64' object cannot be interpreted as an integer`. This fix has been provided via [https://knowledge.udacity.com/questions/657618](https://knowledge.udacity.com/questions/657618).
 
 #### Evaluation of reference training
-Training time: ~20min
-Eval time: ~3 min
+Training time: ~20min  
+Eval time: ~3 min  
+# TODO repeat reference training, is gone?
 ### Improve on the reference
 This section should highlight the different strategies you adopted to improve your model. It should contain relevant figures and details of your findings.
+# TODO Improvements nach Lektionsvorschlägen machen
+Most likely, this initial experiment did not yield optimal results. However, you can make multiple changes to the config file to improve this model.
+
+    One obvious change consists in improving the data augmentation strategy. The preprocessor.proto file contains the different data augmentation method available in the Tf Object Detection API. To help you visualize these augmentations, we are providing a notebook: Explore augmentations.ipynb. Using this notebook, try different data augmentation combinations and select the one you think is optimal for our dataset. Justify your choices in the writeup.
+
+    Keep in mind that the following are also available:
+        experiment with the optimizer: type of optimizer, learning rate, scheduler etc
+        experiment with the architecture. The Tf Object Detection API model zoo offers many architectures. Keep in mind that the pipeline.config file is unique for each architecture and you will have to edit it.
+
+
 
 ### First experiment:
 From lesson: Overfit a single batch without lr annealing, by scaling up epochs (from 25000 to 75000) and using constant learning rate (0.002)  
 Training time:    
 -   expected ~ 1 hour  
--    actual:
+-    actual: ~ 1 hour
 
-Eval time: ~3 min
+Eval time: ~ 6 min
 
-Result: 
+Result:
+# TODO
+
+
+# TODO
+try soft nms (non max suppression) to improve on groups of overlapping objects
