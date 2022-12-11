@@ -12,6 +12,7 @@ if __name__ == "__main__":
 
     # Run training (~20 min on RTX4090)
     # Reference training: python experiments/model_main_tf2.py --model_dir=experiments/reference/ --pipeline_config_path=experiments/reference/pipeline_new.config
+    # Experiment training: python experiments/model_main_tf2.py --model_dir=experiments/experiment0/ --pipeline_config_path=experiments/experiment0/pipeline_new.config
     os.system(f"python experiments/model_main_tf2.py --model_dir={model_dir} --pipeline_config_path={model_config}")
 
     # Evaluation (~ min on RTX4090)

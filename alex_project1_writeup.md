@@ -247,11 +247,25 @@ Very similar to experiment0 but little worse performance
 Use same optimizer settings like in experiment0, but adapting classification_loss to `weighted_sigmoid` instead of `weighted_sigmoid_focal`
 
 Result:
+Canceled early due to way worse performance from start.
+
+
+### Sixth experiment5:
+Diff to experiment0: Use `weighted_softmax` instead of `weighted_sigmoid_focal`
+
+Result:
+Canceled early due to way worse performance from start.
+-> LEave classification_loss as is
+
+### Seventh experiment6:
+Diff to experiment0: Use `random_normal_initializer` instead of `truncated_normal_initializer`
+
+Result: 
 
 
 # TODO noch testen
 - Model architecture adaptions
-    - classification_loss
+    - X classification_loss 
     - Dropout
     - anderen initializer, z.B. `variance_scaling_initializer`  oder `random_normal_initializer`
     - andere activation: z.B. `RELU` oder `SWISH` statt `RELU_6`
