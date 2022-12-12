@@ -382,9 +382,11 @@ In my eyes this augmentation could make sense, since the object detection should
 - random_crop_image:
 This augmentation was already in and worked well, so I will keep it. From a logical point of view, the detection should work also on cropped images.
 - random_black_patches:
-The augmentation of black patches goes a little bit in a similar direction like the crop augmentation before. It removes parts of the image, and the detection should work also well on sub-parts of the image.
+The augmentation of black patches goes a little bit in a similar direction like the crop augmentation before. It removes parts of the image, and the detection should work also well on sub-parts of the image.  
+![Augmentation Black Patches](writeup_files/images/augment/augment_black_patches.png)
 - random_distort_color:
-For our model, this augmentation does not make much sense in my eyes. I have chosen it to directly have a visual effect in the python notebook for evaluation, but I would not recommend to use it during actual training of the image. I won't expect the camera sensor to distort colors.
+For our model, this augmentation does not make much sense in my eyes. I have chosen it to directly have a visual effect in the python notebook for evaluation, but I would not recommend to use it during actual training of the image. I won't expect the camera sensor to distort colors.  
+![Augmentation Color Distortion](writeup_files/images/augment/augment_color_distortion.png)
 
 For more visualizations of augmentations, please have a look at the images stored in the jupyter notebook `Explore augmentations.ipynb`.
 

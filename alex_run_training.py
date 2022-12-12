@@ -22,3 +22,8 @@ if __name__ == "__main__":
 
     # Export
     # python experiments/exporter_main_v2.py --input_type image_tensor --pipeline_config_path experiments/experiment10/pipeline_new.config --trained_checkpoint_dir experiments/experiment10/ --output_directory experiments/experiment10/exported/
+    # Size: du -hs experiments/experiment10/exported/saved_model/
+    # 133M    experiments/experiment10/exported/saved_model/
+
+    # Video
+    # python inference_video.py --labelmap_path label_map.pbtxt --model_path experiments/experiment10/exported/saved_model --tf_record_path /mnt/data/processed/segment-12200383401366682847_2552_140_2572_140_with_camera_labels.tfrecord --config_path experiments/experiment10/pipeline_new.config --output_path animation.gif
