@@ -177,9 +177,9 @@ I had to override the model parameter `eval_config.metrics_set` with `pascal_voc
 ### **Reference experiment**
 The reference experiment represents the baseline for the project, so every experiment is based on the experience gained from the first run.  
 The used evaluation metrics have been adapted (see above) to `pascal_voc_detection_metrics`.
+
 After running the experiment (start commands see `alex_run_training.py`), it shows the following performance:  
-Training time: ~20min   
-Eval time: ~3 min  
+Times: training time ~20min, eval time: ~3 min  
 Having a look at the analysis via tensorboard, it shows that the metrics for the reference run (pink) are quite bad compared to all other runs. Although it has run only for 25k steps, it shows bad results quite from beginning of training. Also the total_loss is stagnating quite early, so I would not expect a big improvement on further training.  
 ![Reference metric result](writeup_files/images/training/reference_metrics.png)
 Regarding detection, we see only very few detections yet (left column, left image, reference: orange).   
@@ -198,34 +198,40 @@ I have varied the following parameters:
 - different initializer (experiment6)
 - different activation functions (experiment7 and experiment8)
 - different augmentations (experiment9 and experiment10)
+
 I also wanted to try out the feature to resume a training on an already trained model, which I tested during experiment8.
 
 The evaluations for most of the experiments are kept short, if the performance was obviously worse than others. I will only shortly talk about the conclusions I have drawn from each experiment and only go into detail and focus on experiments which have shown best performance.
 
 
 ### **experiment0:**
-From lesson: Overfit a single batch without lr annealing, by scaling up epochs (from 25000 to 75000) and using constant learning rate (0.002)  
+Since it was an advice from the lesson and also an outcome from the reference run, the first idea was to adapt the learning rate. From lesson: Overfit a single batch without lr annealing, by scaling up epochs (from 25000 to 75000) and using constant learning rate (0.002)  
 Training time:    
 -   expected ~ 1 hour  
 -    actual: ~ 1 hour
-
 Eval time: ~ 6 min
 
 Result:
-This has shown significant improvment right from the beginning. The impacting factor seems to be the adaption of the learning rate.
+This has shown significant improvement regarding metrics right from the beginning compared to the reference (green line).
+![Reference metric result](writeup_files/images/training/reference_metrics.png)
+An impacting factor seems to be the adaption of the learning rate. So I also want to check out other learning rate strategies and optimizers, to see if it can get even better.
+
+
 
 ### **experiment1:**
 Implication from last experiment: adaptions on learning rate and optimizer seem to have a big impact on performance. We will now try `rms_prop_optimizer` with `exponential_decay_learning_rate`.  
 Training time: ~1:15
 
 Result:
-Performance worse than experiment0
+Performance worse than experiment0 over the complete training cycle, so I would not use `rms_prop_optimizer`
+![experiment1 metrics result](writeup_files/images/training/experiment_0_1.png)
 
 ### **experiment2:**
 Implication from last experiment: Don't use rms_prop_optimizer. Try `adam_optimizer`  with `exponential_decay_learning_rate`, only 50000 steps. 
 
-Performance is also worse than experiment0
--> Choice for `momentum_optimizer ` with lr annealing.
+Performance is also worse than experiment0.
+![experiment2 metrics result](writeup_files/images/training/experiment_0_2.png)
+So regarding optimizer and learning rate, the choice falls for `momentum_optimizer ` with lr annealing.
 
 
 ### **experiment3:**
@@ -246,24 +252,27 @@ Regarding `batch_size`. I would keep it as is, since I don't have any more memor
 
 
 Result:
-Very similar to experiment0 but little worse performance
+Very similar to experiment0 but little worse performance (blue line).
+![experiment3 metrics result](writeup_files/images/training/experiment_0_3.png)
 
 ### **experiment4:**
 Use same optimizer settings like in experiment0, but adapting classification_loss to `weighted_sigmoid` instead of `weighted_sigmoid_focal`
 
 Result:
-Canceled early due to way worse performance from start.
+Canceled early due to way worse performance from start (orange line).
+![experiment4 metrics result](writeup_files/images/training/experiment_0_4.png)
 
 
 ### **experiment5:**
 Diff to experiment0: Use `weighted_softmax` instead of `weighted_sigmoid_focal`
 
 Result:
-Canceled early due to way worse performance from start.
--> LEave classification_loss as is
+Canceled early due to way worse performance from start (purple line).
+![experiment5 metrics result](writeup_files/images/training/experiment_0_5.png)
+The conclusion from above experiments with classification_loss is to leave it as pre-configured (weighted_sigmoid_focal).
 
 ### **experiment6:**
-Diff to experiment0: Use different initializer, `random_normal_initializer` instead of `truncated_normal_initializer`
+Now I wante to test the impact of a different initializer on the model's performance.Diff to experiment0: usage different initializer, `random_normal_initializer` instead of `truncated_normal_initializer`
 
 Result: 
 TODO add results here
