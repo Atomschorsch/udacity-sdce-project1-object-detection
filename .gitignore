@@ -7,4 +7,4 @@
 file_content*.txt
 *.cpython*
 experiments
-!experiments/reference/pipeline_new.config
+!experiments/*/pipeline_new.config
