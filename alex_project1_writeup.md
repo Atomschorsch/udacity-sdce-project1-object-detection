@@ -172,16 +172,22 @@ From the visualization of the datasets, we also see that all 3 data splits have 
 
 ## **Training**
 #### **Own adaptions:**
-I had to override the model parameter `eval_config.metrics_set` with `coco_detection_metrics`, where the original parameter value `coco_detection_metrics` has thrown the error `'numpy.float64' object cannot be interpreted as an integer`. This fix has been provided via [https://knowledge.udacity.com/questions/657618](https://knowledge.udacity.com/questions/657618).
+I had to override the model parameter `eval_config.metrics_set` with `pascal_voc_detection_metrics`, where the original parameter value `coco_detection_metrics` has thrown the error `'numpy.float64' object cannot be interpreted as an integer`. This fix has been provided via [https://knowledge.udacity.com/questions/657618](https://knowledge.udacity.com/questions/657618).
 
 ### **Reference experiment**
-This section should detail the results of the reference experiment. It should includes training metrics and a detailed explanation of the algorithm's performances.
-Metrics:
-Performance:
-
-#### Evaluation of reference training
-Training time: ~20min  
+The reference experiment represents the baseline for the project, so every experiment is based on the experience gained from the first run.  
+The used evaluation metrics have been adapted (see above) to `pascal_voc_detection_metrics`.
+After running the experiment (start commands see `alex_run_training.py`), it shows the following performance:  
+Training time: ~20min   
 Eval time: ~3 min  
+Having a look at the analysis via tensorboard, it shows that the metrics for the reference run (pink) are quite bad compared to all other runs. Although it has run only for 25k steps, it shows bad results quite from beginning of training. Also the total_loss is stagnating quite early, so I would not expect a big improvement on further training.  
+![Reference metric result](writeup_files/images/training/reference_metrics.png)
+Regarding detection, we see only very few detections yet (left column, left image, reference: orange).   
+![Reference comparison result](writeup_files/images/training/reference_eval.png)
+![Reference comparison result2](writeup_files/images/training/reference_eval2.png)
+The learning rate development looks quite weird, so a first idea (and also advice from lessons) could be to adapt the learning rate strategy (compare experiment0).
+![Reference learning rate result](writeup_files/images/training/reference_lr.png)
+
 
 ### **Improve on the reference**
 
@@ -318,13 +324,8 @@ data_augmentation_options {
 ```
 Those augmentation have been chosen according to the argumentation in the chapter [Augmentations](Augmentations)
 
-
-
-### Summary and discussion of experiments
-# TODO
-
 ## Augmentations
-[List of available augmentations](https://github.com/tensorflow/models/blob/master/research/object_detection/protos/preprocessor.proto)
+[List of available augmentations](https://github.com/tensorflow/models/blob/master/research/object_detection/protos/preprocessor.proto)  
 I decided to play around with the following augmentations below, see `Explore augmentations.ipynb`:
 ```
 data_augmentation_options {
@@ -369,8 +370,6 @@ data_augmentation_options {
     }
   }
 ```
-# TODO 
-add images
 
 Not all of them make sense, so I decided to use only a subset of them in my final experiment10.
 - random_horizontal_flip:  
@@ -390,6 +389,10 @@ For our model, this augmentation does not make much sense in my eyes. I have cho
 
 For more visualizations of augmentations, please have a look at the images stored in the jupyter notebook `Explore augmentations.ipynb`.
 
-## Export
+### Summary and discussion of experiments
+# TODO
 
-## Video
+## Export & Video
+Like advised in the project task, the best performing project has been saved and exported to `experiments/experiment10/exported/saved_model`.
+An animation has been created and been saved as `animation.gif`.  
+The commands used for this can be found in `alex_run_training.py`.
