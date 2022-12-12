@@ -130,7 +130,6 @@ Implications from the visualization:
     ![Tiny boxes](writeup_files/images/eda/project1_eda_small_boxes.png)
 
 ### Data split and Cross validation
-This section should detail the cross validation strategy and justify your approach.
 The task to split the data into a train, val and test subset seemed easy on the first view, but opened some heavy questions.
 Regarding percentages, I have chosen the ones given from the lessons: `75% train, 15% val, 10% test`, to have the most images for training, but keeping two sufficiently large sets for validation and training.
 
@@ -195,7 +194,7 @@ I have varied the following parameters:
 - different augmentations (experiment9 and experiment10)
 I also wanted to try out the feature to resume a training on an already trained model, which I tested during experiment8.
 
-The evaluations for most of the experiments are kept short, if the performance was obviously worse than others. I will only shortly talk about the conclusions I have drawn from each experiment. I will only go into detail and focus on experiments which have shown best performance.
+The evaluations for most of the experiments are kept short, if the performance was obviously worse than others. I will only shortly talk about the conclusions I have drawn from each experiment and only go into detail and focus on experiments which have shown best performance.
 
 
 ### **experiment0:**
@@ -317,7 +316,7 @@ data_augmentation_options {
     }
   }
 ```
-Augmentation argumentation:
+Those augmentation have been chosen according to the argumentation in the chapter [Augmentations](Augmentations)
 
 
 
@@ -326,6 +325,7 @@ Augmentation argumentation:
 
 ## Augmentations
 [List of available augmentations](https://github.com/tensorflow/models/blob/master/research/object_detection/protos/preprocessor.proto)
+I decided to play around with the following augmentations below, see `Explore augmentations.ipynb`:
 ```
 data_augmentation_options {
     random_horizontal_flip {
@@ -369,8 +369,24 @@ data_augmentation_options {
     }
   }
 ```
+# TODO 
+add images
 
-See `Explore augmentations.ipynb`
+Not all of them make sense, so I decided to use only a subset of them in my final experiment10.
+- random_horizontal_flip:  
+This was already in and I will keep it as is. People, cars and cyclists should be detected no matter from which direction the camera looks, so this is a reasonable augmentation.
+- random_jpeg_quality:
+I think this is a reasonable augmentation, since this is adding some blur on the images, and improve the performance of the model in a way, that it could handle also blurred images or images which are more far away and therefore blurry.
+- random_image_scale:
+In my eyes this augmentation could make sense, since the object detection should work, regardless of the object size.
+- random_crop_image:
+This augmentation was already in and worked well, so I will keep it. From a logical point of view, the detection should work also on cropped images.
+- random_black_patches:
+The augmentation of black patches goes a little bit in a similar direction like the crop augmentation before. It removes parts of the image, and the detection should work also well on sub-parts of the image.
+- random_distort_color:
+For our model, this augmentation does not make much sense in my eyes. I have chosen it to directly have a visual effect in the python notebook for evaluation, but I would not recommend to use it during actual training of the image. I won't expect the camera sensor to distort colors.
+
+For more visualizations of augmentations, please have a look at the images stored in the jupyter notebook `Explore augmentations.ipynb`.
 
 ## Export
 
