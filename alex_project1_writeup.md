@@ -94,10 +94,7 @@ Both functions are called within the project task `Exploratory Data Analysis.ipy
     - boxes with class / label
 
     This is the minimum information we need. Images for training and boxes/labels for evaluation.
-- There are 1997 images. This is not a big number for data driven methods.
-    - -> TODO implications on data split?
-    - -> TODO implications on cross-validation?    
-    - -> TODO further implications
+- There are 1997 images. This is not a big number for data driven methods, so it will be interesting how good the model is performing. But since we are adding up on a pretrained model and just adding some training for our own classes, it could still work out.
 - All images have the same resolution (width x height). This means we don't need any additional layers in our model to adapt to differen image sizes
 - The histogram "Number of boxes per image" in above diagram shows that there are quite a lot of images with > 30 boxes / objects, even some with > 70 boxes. This means that we will probably have very crowded images with a lot of occlusions, and maybe also a lot of tiny objects.
     - We could try soft nms (non max suppression) in the improvment section.
@@ -174,31 +171,34 @@ From the visualization of the datasets, we also see that all 3 data splits have 
 - density: few / many objects
 - area: urban / landscape
 
-## Training
-### Reference experiment
-This section should detail the results of the reference experiment. It should includes training metrics and a detailed explanation of the algorithm's performances.
-
-#### Own adaptions:
+## **Training**
+#### **Own adaptions:**
 I had to override the model parameter `eval_config.metrics_set` with `coco_detection_metrics`, where the original parameter value `coco_detection_metrics` has thrown the error `'numpy.float64' object cannot be interpreted as an integer`. This fix has been provided via [https://knowledge.udacity.com/questions/657618](https://knowledge.udacity.com/questions/657618).
+
+### **Reference experiment**
+This section should detail the results of the reference experiment. It should includes training metrics and a detailed explanation of the algorithm's performances.
+Metrics:
+Performance:
 
 #### Evaluation of reference training
 Training time: ~20min  
 Eval time: ~3 min  
-# TODO repeat reference training, is gone?
-### Improve on the reference
-This section should highlight the different strategies you adopted to improve your model. It should contain relevant figures and details of your findings.
-# TODO Improvements nach Lektionsvorschlägen machen
-Most likely, this initial experiment did not yield optimal results. However, you can make multiple changes to the config file to improve this model.
 
-    One obvious change consists in improving the data augmentation strategy. The preprocessor.proto file contains the different data augmentation method available in the Tf Object Detection API. To help you visualize these augmentations, we are providing a notebook: Explore augmentations.ipynb. Using this notebook, try different data augmentation combinations and select the one you think is optimal for our dataset. Justify your choices in the writeup.
+### **Improve on the reference**
 
-    Keep in mind that the following are also available:
-        experiment with the optimizer: type of optimizer, learning rate, scheduler etc
-        experiment with the architecture. The Tf Object Detection API model zoo offers many architectures. Keep in mind that the pipeline.config file is unique for each architecture and you will have to edit it.
+The advice from the project task was to play around with different model parameters. During the  experiments, my strategy was to get a bit of overview which parameters have a bigger impact on performance by running with only varying one parameter, to try in the end a combination of the ones which have shown best improvements.  
+I have varied the following parameters:  
+- different optimizers and learning rates (experiment0-experiment3)
+- different classification_loss (experiment4 and experiment5)
+- different initializer (experiment6)
+- different activation functions (experiment7 and experiment8)
+- different augmentations (experiment9 and experiment10)
+I also wanted to try out the feature to resume a training on an already trained model, which I tested during experiment8.
+
+The evaluations for most of the experiments are kept short, if the performance was obviously worse than others. I will only shortly talk about the conclusions I have drawn from each experiment. I will only go into detail and focus on experiments which have shown best performance.
 
 
-
-### First experiment experiment0:
+### **experiment0:**
 From lesson: Overfit a single batch without lr annealing, by scaling up epochs (from 25000 to 75000) and using constant learning rate (0.002)  
 Training time:    
 -   expected ~ 1 hour  
@@ -209,21 +209,21 @@ Eval time: ~ 6 min
 Result:
 This has shown significant improvment right from the beginning. The impacting factor seems to be the adaption of the learning rate.
 
-### Second experiment1:
+### **experiment1:**
 Implication from last experiment: adaptions on learning rate and optimizer seem to have a big impact on performance. We will now try `rms_prop_optimizer` with `exponential_decay_learning_rate`.  
 Training time: ~1:15
 
 Result:
 Performance worse than experiment0
 
-### Third experiment2:
+### **experiment2:**
 Implication from last experiment: Don't use rms_prop_optimizer. Try `adam_optimizer`  with `exponential_decay_learning_rate`, only 50000 steps. 
 
 Performance is also worse than experiment0
 -> Choice for `momentum_optimizer ` with lr annealing.
 
 
-### Fourth experiment3:
+### **experiment3:**
 After test of all three available optimizers, the choice falls for `momentum_optimizer` with lr annealing, since loss seems to stagnate from step 40000 in experiment0
 ```
 momentum_optimizer    {
@@ -243,21 +243,21 @@ Regarding `batch_size`. I would keep it as is, since I don't have any more memor
 Result:
 Very similar to experiment0 but little worse performance
 
-### Fifth experiment4:
+### **experiment4:**
 Use same optimizer settings like in experiment0, but adapting classification_loss to `weighted_sigmoid` instead of `weighted_sigmoid_focal`
 
 Result:
 Canceled early due to way worse performance from start.
 
 
-### Sixth experiment5:
+### **experiment5:**
 Diff to experiment0: Use `weighted_softmax` instead of `weighted_sigmoid_focal`
 
 Result:
 Canceled early due to way worse performance from start.
 -> LEave classification_loss as is
 
-### Seventh experiment6:
+### **experiment6:**
 Diff to experiment0: Use different initializer, `random_normal_initializer` instead of `truncated_normal_initializer`
 
 Result: 
@@ -266,17 +266,17 @@ Not that bad, will resume training with more 40000 (to also test the feature of 
 TODO add resuming results here.
 Still worse than experiment0
 
-### Eight experiment7 and nineth experiment8:
+### **experiment7 and experiment8:**
 Diff to experiment0: Use different activation, `SWISH` instead of `RELU_6`
 
 Result:
 Very good performance, but sadly training got interrupted. Restarted as experiment8 with same configuration
 Best performance, so far
 
-### Tenth experiment9:
-Run with only one step and different augmentations to visualize them. Evaluation see chapter augmentations.
+### **experiment9:**
+This experiment was solely for augmentation analysis. It is setup for only one step, increased batch_size and different augmentations to test and visualize them. Evaluation see chapter augmentations.
 
-### Eleventh experiment10:
+### **experiment10:**
 Full run with identical model and architecture of experiment8 with 70k steps, but adding the following augmentations:
 ```
 data_augmentation_options {
@@ -317,28 +317,60 @@ data_augmentation_options {
     }
   }
 ```
+Augmentation argumentation:
 
 
-# TODO noch testen
-- Model architecture adaptions
-    - X classification_loss 
-    - Dropout
-    - X anderen initializer, z.B. `variance_scaling_initializer`  oder `random_normal_initializer`
-    - X andere activation: z.B. `RELU` oder `SWISH` statt `RELU_6`
-- Bestes Netz noch weiter trainieren (resume training)
 
-
-### Summary of experiments
+### Summary and discussion of experiments
+# TODO
 
 ## Augmentations
 [List of available augmentations](https://github.com/tensorflow/models/blob/master/research/object_detection/protos/preprocessor.proto)
-- flip: RandomHorizontalFlip
-- brightness: RandomAdjustBrightness
-- RandomJitterBoxes 
-- crop
-- color
-- move
-- AutoAugmentImage ?
+```
+data_augmentation_options {
+    random_horizontal_flip {
+    }
+  }
+  data_augmentation_options {
+    random_jpeg_quality {
+      random_coef: 0.8
+      min_jpeg_quality: 60
+    }
+  }
+  data_augmentation_options {
+    random_image_scale {
+      min_scale_ratio: 0.7
+      max_scale_ratio: 1.5
+    }
+  }
+  data_augmentation_options {
+    random_crop_image {
+      min_object_covered: 0.0
+      min_aspect_ratio: 0.75
+      max_aspect_ratio: 3.0
+      min_area: 0.75
+      max_area: 1.0
+      overlap_thresh: 0.0
+    }
+  }
+  data_augmentation_options {
+    random_black_patches {
+      max_black_patches: 3
+      probability: 0.2
+      size_to_image_ratio: 0.1
+    }
+  }
+  data_augmentation_options {
+    random_adjust_brightness {
+    }
+  }
+  data_augmentation_options {
+    random_distort_color {
+    }
+  }
+```
+
+See `Explore augmentations.ipynb`
 
 ## Export
 
