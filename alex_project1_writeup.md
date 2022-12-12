@@ -266,10 +266,58 @@ Not that bad, will resume training with more 40000 (to also test the feature of 
 TODO add resuming results here.
 Still worse than experiment0
 
-### Seventh experiment6:
+### Eight experiment7 and nineth experiment8:
 Diff to experiment0: Use different activation, `SWISH` instead of `RELU_6`
 
-Result: 
+Result:
+Very good performance, but sadly training got interrupted. Restarted as experiment8 with same configuration
+Best performance, so far
+
+### Tenth experiment9:
+Run with only one step and different augmentations to visualize them. Evaluation see chapter augmentations.
+
+### Eleventh experiment10:
+Full run with identical model and architecture of experiment8 with 70k steps, but adding the following augmentations:
+```
+data_augmentation_options {
+    random_horizontal_flip {
+    }
+  }
+  data_augmentation_options {
+    random_jpeg_quality {
+      random_coef: 0.8
+      min_jpeg_quality: 60
+    }
+  }
+  data_augmentation_options {
+    random_image_scale {
+      min_scale_ratio: 0.7
+      max_scale_ratio: 1.5
+    }
+  }
+  data_augmentation_options {
+    random_crop_image {
+      min_object_covered: 0.0
+      min_aspect_ratio: 0.75
+      max_aspect_ratio: 3.0
+      min_area: 0.75
+      max_area: 1.0
+      overlap_thresh: 0.0
+    }
+  }
+  data_augmentation_options {
+    random_black_patches {
+      max_black_patches: 3
+      probability: 0.2
+      size_to_image_ratio: 0.1
+    }
+  }
+  data_augmentation_options {
+    random_adjust_brightness {
+    }
+  }
+```
+
 
 # TODO noch testen
 - Model architecture adaptions
