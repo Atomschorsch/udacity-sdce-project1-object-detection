@@ -4,7 +4,7 @@
 
 ## Project overview
 Object detection is one of the main crucial tasks during video perception in self driving cars or driver assistance systems.
-In this project, each necessary step from set up and data analysis due to cross validation, training, evaluation and augmentation shall be practiced and implemented, due to the lessons learned in the first chapter and with example images from the Waymo Open dataset.
+In this project, each necessary step from set up and data analysis, training, evaluation, augmentation, export and inference / animation shall be practiced and implemented, due to the lessons learned in the first chapter and with example images from the Waymo Open dataset.
 
 ## Set up
 After heavy difficulties to set up a local system, I have finally managed to run the repo inside of a container on wsl2 on windows with 
@@ -193,7 +193,9 @@ The learning rate development looks quite weird, so a first idea (and also advic
 ### **Improve on the reference**
 
 The advice from the project task was to play around with different model parameters. During the  experiments, my strategy was to get a bit of overview which parameters have a bigger impact on performance by running with only varying one parameter, to try in the end a combination of the ones which have shown best improvements.  
+
 To find the different parameters and their possible values, I have inspected the [proto files on the github page of the object detection API](https://github.com/tensorflow/models/tree/master/research/object_detection/protos) and have used the github / browser search for the parameter names.
+
 I have varied the following parameters:  
 - different optimizers and learning rates (experiment0-experiment3)
 - different classification_loss (experiment4 and experiment5)
