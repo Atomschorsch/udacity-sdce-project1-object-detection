@@ -10,6 +10,7 @@ import glob
 from helpers.visualization import visualize_tf_record_dataset
 from helpers.exploratory_analysis import display_structure_of_dataset_item, show_dataset_basics
 
+
 def parse_record(record):
     '''Function to parse one record.'''
     image_feature_description = {
@@ -29,7 +30,7 @@ def parse_record(record):
     return tf.io.parse_single_example(record, image_feature_description)
 
 
-def transform_record(record, box_in_pixel_pos = False):
+def transform_record(record, box_in_pixel_pos=False):
     """
     Function to transform one record into numpy dict with decoded image
     """
@@ -51,10 +52,10 @@ def transform_record(record, box_in_pixel_pos = False):
         height_factor = ret_dict['height']
 
     boxes_odd = np.array([
-        record['image/object/bbox/ymin'].values.numpy()*height_factor,
-        record['image/object/bbox/xmin'].values.numpy()*width_factor,
-        record['image/object/bbox/ymax'].values.numpy()*height_factor,
-        record['image/object/bbox/xmax'].values.numpy()*width_factor,
+        record['image/object/bbox/ymin'].values.numpy() * height_factor,
+        record['image/object/bbox/xmin'].values.numpy() * width_factor,
+        record['image/object/bbox/ymax'].values.numpy() * height_factor,
+        record['image/object/bbox/xmax'].values.numpy() * width_factor,
     ])
     ret_dict['boxes'] = [boxes_odd[:, idx]
                          for idx in range(boxes_odd.shape[1])]

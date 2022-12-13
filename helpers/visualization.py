@@ -15,13 +15,13 @@ import tensorflow as tf
 import json
 import numpy as np
 
-
+# Data generator
 colors = ['y', 'r', 'g', 'b', 'w']
 
 
 def insert_newlines(string, every=80):
     '''Insert linebreaks in strings.'''
-    return '\n'.join(str(string[i:i+every]) for i in range(0, len(str(string)), every))
+    return '\n'.join(str(string[i:i + every]) for i in range(0, len(str(string)), every))
 
 
 def visualize_tf_record_dataset(
@@ -47,7 +47,7 @@ def visualize_tf_record_dataset(
     subplot_dim, _ = get_subplot_dims(num_images, x_max=x_max, y_max=y_max)
     max_num = x_max * y_max
 
-    for idx_file, data_item in enumerate(dataset[:min(n_show-1, num_images)]):
+    for idx_file, data_item in enumerate(dataset[:min(n_show - 1, num_images)]):
         axs_idx = idx_file % max_num
         # Handle subplot figures / dimensions
         if axs_idx == 0:
@@ -85,19 +85,20 @@ def visualize_tf_record_dataset(
                        class_names=class_names,
                        colors=colors)
 
-        if sum(subplot_dim) > 2 and axs_idx == max_num-1:
+        if sum(subplot_dim) > 2 and axs_idx == max_num - 1:
             axs = axs.reshape(subplot_dim)
             fig.subplots_adjust(hspace=0.5)
     plt.tight_layout()
     plt.show()
 
+
 def calculate_box_size(box):
-    return (box[3]-box[1])*(box[2]-box[0])
+    return (box[3] - box[1]) * (box[2] - box[0])
 
 
 def show_box(ax, box, color, class_name="", dashed=False):
     # x and y must be switched for matplotlib?
-    ax.add_patch(plt.Rectangle((box[1], box[0]), box[3]-box[1], box[2]-box[0], linewidth=1,
+    ax.add_patch(plt.Rectangle((box[1], box[0]), box[3] - box[1], box[2] - box[0], linewidth=1,
                  edgecolor=color, facecolor='none', linestyle='--' if dashed else '-'))
     if class_name and calculate_box_size(box) > 4000:
         ax.text(box[1], box[2], class_name, color=color,
@@ -114,7 +115,7 @@ def get_image_list(ground_truth, predictions=[]):
 def get_coarse_resolution(num):
     x_dim = 1
     y_dim = 1
-    while x_dim*y_dim < num:
+    while x_dim * y_dim < num:
         if x_dim <= y_dim:
             x_dim += 1
         else:
@@ -205,7 +206,7 @@ def viz(ground_truth, predictions=[], x_max=5, y_max=5, show_pred_classnames=Tru
         if image_data:
             plot_boxes(axs[axs_idx], image_data)
 
-        if sum(subplot_dim) > 2 and axs_idx == max_num-1:
+        if sum(subplot_dim) > 2 and axs_idx == max_num - 1:
             axs = axs.reshape(subplot_dim)
             fig.subplots_adjust(hspace=0.5)
     plt.tight_layout()
@@ -230,9 +231,9 @@ def test_data_generator(num_images):
     dog_dir = os.path.join(data_root_dir, "Dog")
     for idx in range(num_images):
         # Choose cat or dog
-        is_cat = bool(np.random.randint(0, 1+1))
+        is_cat = bool(np.random.randint(0, 1 + 1))
         # TODOCreate random gt boxes
-        image_index = np.random.randint(0, 12000+1)
+        image_index = np.random.randint(0, 12000 + 1)
         image_dir = cat_dir if is_cat else dog_dir
         image_class = 1 if is_cat else 2
         image_path = os.path.join(image_dir, str(image_index) + '.jpg')
@@ -240,25 +241,25 @@ def test_data_generator(num_images):
             continue
         gt_boxes = []
         gt_classes = []
-        for box_idx in range(np.random.randint(0, 10+1)):
-            x1 = np.random.randint(0, 100+1)
-            y1 = np.random.randint(0, 100+1)
-            x2 = x1 + np.random.randint(30, 100+1)
-            y2 = y1 + np.random.randint(30, 100+1)
+        for box_idx in range(np.random.randint(0, 10 + 1)):
+            x1 = np.random.randint(0, 100 + 1)
+            y1 = np.random.randint(0, 100 + 1)
+            x2 = x1 + np.random.randint(30, 100 + 1)
+            y2 = y1 + np.random.randint(30, 100 + 1)
             gt_boxes.append([x1, y1, x2, y2])
-            gt_classes.append(np.random.randint(1, 2+1))
+            gt_classes.append(np.random.randint(1, 2 + 1))
         add_json(ground_truth, image_path, gt_boxes, gt_classes)
         # Only add predictions in ~ 19/20 cases
         pred_boxes = []
         pred_classes = []
-        if np.random.randint(0, 20+1):
-            for box_idx in range(np.random.randint(0, 10+1)):
-                x1 = np.random.randint(0, 100+1)
-                y1 = np.random.randint(0, 100+1)
-                x2 = x1 + np.random.randint(30, 100+1)
-                y2 = y1 + np.random.randint(30, 100+1)
+        if np.random.randint(0, 20 + 1):
+            for box_idx in range(np.random.randint(0, 10 + 1)):
+                x1 = np.random.randint(0, 100 + 1)
+                y1 = np.random.randint(0, 100 + 1)
+                x2 = x1 + np.random.randint(30, 100 + 1)
+                y2 = y1 + np.random.randint(30, 100 + 1)
                 pred_boxes.append([x1, y1, x2, y2])
-                pred_classes.append(np.random.randint(1, 2+1))
+                pred_classes.append(np.random.randint(1, 2 + 1))
         add_json(predictions, image_path, pred_boxes, pred_classes)
 
     return ground_truth, predictions

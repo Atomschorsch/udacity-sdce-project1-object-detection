@@ -8,8 +8,7 @@ from helpers.project1 import project1_visualize_inspect
 from helpers.split import split_images, split_files
 
 
-
-def split(source, destination, test_fac = 0.1, val_fac = 0.15):
+def split(source, destination, test_fac=0.1, val_fac=0.15):
     """
     Create three splits from the processed records. The files should be moved to new folders in the
     same directory. This folder should be named train, val and test.
@@ -25,15 +24,17 @@ def split(source, destination, test_fac = 0.1, val_fac = 0.15):
 
     # Implemented both functions
     # train_path, val_path, test_path = split_files(source, destination, test_fac = 0.1, val_fac = 0.15)
-    train_path, val_path, test_path = split_images(source, destination, test_fac = 0.1, val_fac = 0.15)
+    train_path, val_path, test_path = split_images(
+        source, destination, test_fac=0.1, val_fac=0.15)
     return train_path, val_path, test_path
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Split data into training / validation / testing')
+    parser = argparse.ArgumentParser(
+        description='Split data into training / validation / testing')
     parser.add_argument('--source', required=False, default="/mnt/data/processed",
                         help='source data directory')
-    parser.add_argument('--destination', required=False, default = "/mnt/data",
+    parser.add_argument('--destination', required=False, default="/mnt/data",
                         help='destination data directory')
     args = parser.parse_args()
 
@@ -48,7 +49,8 @@ if __name__ == "__main__":
 
     # Visualize different datasets to inspect on homogenities
     logger.info('Inspecting splits...')
-    project1_visualize_inspect(glob.glob(os.path.join(train_path,'*.tfrecord')))
-    project1_visualize_inspect(glob.glob(os.path.join(val_path,'*.tfrecord')))
-    project1_visualize_inspect(glob.glob(os.path.join(test_path,'*.tfrecord')))
-
+    project1_visualize_inspect(
+        glob.glob(os.path.join(train_path, '*.tfrecord')))
+    project1_visualize_inspect(glob.glob(os.path.join(val_path, '*.tfrecord')))
+    project1_visualize_inspect(
+        glob.glob(os.path.join(test_path, '*.tfrecord')))

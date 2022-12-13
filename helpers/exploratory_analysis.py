@@ -119,9 +119,9 @@ def show_dataset_basics(dataset):
     show_histogramm(axs[0][0], widths, 'Image width distribution', )
     show_histogramm(axs[0][1], heights, 'Image height distribution')
     show_histogramm(axs[1][0], num_boxes_per_image,
-                    'Number of boxes per image',  show_values=False, bins=max(num_boxes_per_image))
+                    'Number of boxes per image', show_values=False, bins=max(num_boxes_per_image))
     show_histogramm(axs[1][1], classes_list, 'Class distribution', labels=class_text_vec,
-                    bins=[idx-0.5 for idx in range(0, len(class_text_vec)+1)])
+                    bins=[idx - 0.5 for idx in range(0, len(class_text_vec) + 1)])
     plt.subplots_adjust(bottom=0.15)
     plt.show()
     return num_images, class_text_vec, class_count
