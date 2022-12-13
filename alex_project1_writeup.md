@@ -199,7 +199,7 @@ I have varied the following parameters:
 - different activation functions (experiment7 and experiment8)
 - different augmentations (experiment9 and experiment10)
 
-I also wanted to try out the feature to resume a training on an already trained model, which I tested during experiment8.
+I also wanted to try out the feature to resume a training on an already trained model, which I tested during experiment6.
 
 The evaluations for most of the experiments are kept short, if the performance was obviously worse than others. I will only shortly talk about the conclusions I have drawn from each experiment and only go into detail and focus on experiments which have shown best performance.
 
@@ -211,9 +211,9 @@ Training time:
 -    actual: ~ 1 hour
 Eval time: ~ 6 min
 
-Result:
-This has shown significant improvement regarding metrics right from the beginning compared to the reference (green line).
-![Reference metric result](writeup_files/images/training/reference_metrics.png)
+Result:  
+This has shown significant improvement regarding metrics right from the beginning compared to the reference (green line).  
+![Reference metric result](writeup_files/images/training/reference_metrics.png)  
 An impacting factor seems to be the adaption of the learning rate. So I also want to check out other learning rate strategies and optimizers, to see if it can get even better.
 
 
@@ -222,16 +222,17 @@ An impacting factor seems to be the adaption of the learning rate. So I also wan
 Implication from last experiment: adaptions on learning rate and optimizer seem to have a big impact on performance. We will now try `rms_prop_optimizer` with `exponential_decay_learning_rate`.  
 Training time: ~1:15
 
-Result:
-Performance worse than experiment0 over the complete training cycle, so I would not use `rms_prop_optimizer`
+Result:  
+The losses (pink line) are worse than experiment0 over the complete training cycle , so I would not use `rms_prop_optimizer`  
 ![experiment1 metrics result](writeup_files/images/training/experiment_0_1.png)
 
 ### **experiment2:**
 Implication from last experiment: Don't use rms_prop_optimizer. Try `adam_optimizer`  with `exponential_decay_learning_rate`, only 50000 steps. 
 
-Performance is also worse than experiment0.
-![experiment2 metrics result](writeup_files/images/training/experiment_0_2.png)
-So regarding optimizer and learning rate, the choice falls for `momentum_optimizer ` with lr annealing.
+Result:  
+Losses (orange line) are also worse than experiment0.   
+![experiment2 metrics result](writeup_files/images/training/experiment_0_2.png)  
+So regarding optimizer and learning rate, the choice falls for `momentum_optimizer` with lr annealing.
 
 
 ### **experiment3:**
@@ -251,41 +252,48 @@ Also non-max-suppression could help on big groups of objects that we have in the
 Regarding `batch_size`. I would keep it as is, since I don't have any more memory available in my local machine.  
 
 
-Result:
-Very similar to experiment0 but little worse performance (blue line).
+Result:  
+The losses (blue line) are very similar to experiment0 and only little worse.  
 ![experiment3 metrics result](writeup_files/images/training/experiment_0_3.png)
 
 ### **experiment4:**
 Use same optimizer settings like in experiment0, but adapting classification_loss to `weighted_sigmoid` instead of `weighted_sigmoid_focal`
 
-Result:
-Canceled early due to way worse performance from start (orange line).
+Result:  
+Canceled early due to way worse performance from start (orange line).  
 ![experiment4 metrics result](writeup_files/images/training/experiment_0_4.png)
 
 
 ### **experiment5:**
-Diff to experiment0: Use `weighted_softmax` instead of `weighted_sigmoid_focal`
+Difference to experiment0: Use `weighted_softmax` instead of `weighted_sigmoid_focal`
 
-Result:
-Canceled early due to way worse performance from start (purple line).
-![experiment5 metrics result](writeup_files/images/training/experiment_0_5.png)
+Result:  
+Canceled early due to way worse losses directly from start (purple line).  
+![experiment5 metrics result](writeup_files/images/training/experiment_0_5.png)  
 The conclusion from above experiments with classification_loss is to leave it as pre-configured (weighted_sigmoid_focal).
 
 ### **experiment6:**
-Now I wante to test the impact of a different initializer on the model's performance.Diff to experiment0: usage different initializer, `random_normal_initializer` instead of `truncated_normal_initializer`
+Now I want to test the impact of a different initializer on the model's performance.  
+Difference to experiment0: usage of different initializer, `random_normal_initializer` instead of `truncated_normal_initializer`
 
 Result: 
-TODO add results here
-Not that bad, will resume training with more 40000 (to also test the feature of resuming a training later.  Pipeline file is named `pipeline_resume.config`)
-TODO add resuming results here.
-Still worse than experiment0
+Performance is not that bad (orange line):
+![experiment6 metrics result](writeup_files/images/training/experiment_0_6.png)
+I have tried to improve the performance by resuming training with more 40000 (to also test the feature of resuming a training later.  Pipeline file is named `pipeline_resume.config`). But the overall performance is still a little bit worse than experiment0!  
+![experiment6 eval result](writeup_files/images/training/experiment_0_6_eval.png)
+
 
 ### **experiment7 and experiment8:**
-Diff to experiment0: Use different activation, `SWISH` instead of `RELU_6`
+It's now time to play around with different activations.  
+The difference to experiment0: `SWISH` instead of `RELU_6`.
 
 Result:
-Very good performance, but sadly training got interrupted. Restarted as experiment8 with same configuration
-Best performance, so far
+Very good performance, but sadly training got interrupted. Restarted as experiment8 with same configuration.  
+This delivers the best metrics so far (blue lines):  
+![experiment8 metrics result](writeup_files/images/training/experiment_0_78.png)  
+The performance is also better:  
+![experiment8 eval result](writeup_files/images/training/experiment_0_78_eval.png)
+
 
 ### **experiment9:**
 This experiment was solely for augmentation analysis. It is setup for only one step, increased batch_size and different augmentations to test and visualize them. Evaluation see chapter augmentations.
@@ -331,7 +339,15 @@ data_augmentation_options {
     }
   }
 ```
-Those augmentation have been chosen according to the argumentation in the chapter [Augmentations](Augmentations)
+Those augmentation have been chosen according to the argumentation in the chapter **Augmentations**.  
+
+Result:  
+Slightly better metrics and performance than experiment8. From all experiments, this one seems to have the best results regarding metrics (pink line) and performance (middle column):  
+![experiment10 metrics result](writeup_files/images/training/experiment_comparison.png)  
+![experiment10 eval result](writeup_files/images/training/experiment_eval_comparison.png)
+![experiment10 eval result3](writeup_files/images/training/experiment_eval_comparison3.png)
+![experiment10 eval result2](writeup_files/images/training/experiment_eval_comparison2.png)
+More details: see chapter Summary and discussion of experiments
 
 ## Augmentations
 [List of available augmentations](https://github.com/tensorflow/models/blob/master/research/object_detection/protos/preprocessor.proto)  
@@ -398,8 +414,27 @@ For our model, this augmentation does not make much sense in my eyes. I have cho
 
 For more visualizations of augmentations, please have a look at the images stored in the jupyter notebook `Explore augmentations.ipynb`.
 
-### Summary and discussion of experiments
-# TODO
+## Summary and discussion of experiments
+We have varied different model parameters:  
+- different optimizers and learning rates (experiment0-experiment3)
+- different classification_loss (experiment4 and experiment5)
+- different initializer (experiment6)
+- different activation functions (experiment7 and experiment8)
+- different augmentations (experiment9 and experiment10)
+
+Overall, experiments8 and experiment10 have shown the best results, with **experiment10** being a marginal winner regarding perfomance.  
+`momentum_optimizer` has shown best results regarding **optimizer** search.   
+Regarding **learning rate**, `exponential_decay_learning_rate` has shown slightly better performance than the others, although it could also be just a misconfiguration of that feature from my side, to get better results for the others.  
+Regarding **classification_loss**, variations didn't show much improvement, so I decided to stay with the preset `weighted_sigmoid_focal`.  
+Regarding **initializer**, variations also didn't improve the model performance, so I decided to stay with the preset `truncated_normal_initializer`.   
+Regarding **activation**, the change from `RELU_6` to `SWISH` actually has shown some improvement. I have found an interesting comparison of both activations [here](https://medium.com/@jaiyamsharma/swish-in-depth-a-comparison-of-swish-relu-on-cifar-10-1c798e70ee08).   
+Regarding **augmentation**, I have decided to evaluate reasonable augmentations due to if the results could be appear in the real world, or could really be recorded in that way by a camera sensor. Another criteria was to evaluate, if the model should still perform well on the augmentation (e.g. black patch or crop: model should still perform well if some parts are missing.).  
+Regarding **training speed** of the best performing models, experiment0 was the fastest. But since this is not relevant for me, it was not a performance criteria to evaluate the best models. I don't have limited time or hardware resources (at least for this kind of small examples)  
+![experiment0 speed](writeup_files/images/training/experiment_speed_comparison.png)
+
+It is clear, that there might be also different variants for the parameter configurations, which could lead to better results, but this could be a never-ending story. I am also aware that some of the parameters I have decided to sort out due to performance could just have been misconfigured by myself and would show way better performance when configured differently.
+
+Further steps could be to train some models a little longer or try out more different parameters. Another idea could be, to try even some different pre_trained models.
 
 ## Export & Video
 Like advised in the project task, the best performing project has been saved and exported to `experiments/experiment10/exported/saved_model`.
