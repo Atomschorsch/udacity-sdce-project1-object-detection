@@ -1,5 +1,9 @@
 # Object Detection in an Urban Environment
 
+THIS IS THE PROJECT TEMPLATE.
+
+THE PROJECT WRITEUP HAS BEEN DONE IN `alex_project1_writeup.md`.
+
 ## Data
 
 For this project, we will be using data from the [Waymo Open dataset](https://waymo.com/open/).

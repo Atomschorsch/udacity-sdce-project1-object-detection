@@ -172,7 +172,8 @@ From the visualization of the datasets, we also see that all 3 data splits have 
 
 ## **Training**
 #### **Own adaptions:**
-I had to override the model parameter `eval_config.metrics_set` with `pascal_voc_detection_metrics`, where the original parameter value `coco_detection_metrics` has thrown the error `'numpy.float64' object cannot be interpreted as an integer`. This fix has been provided via [https://knowledge.udacity.com/questions/657618](https://knowledge.udacity.com/questions/657618).
+I had to override the model parameter `eval_config.metrics_set` with `pascal_voc_detection_metrics`, where the original parameter value `coco_detection_metrics` has thrown the error `'numpy.float64' object cannot be interpreted as an integer`. This fix has been provided via [https://knowledge.udacity.com/questions/657618](https://knowledge.udacity.com/questions/657618).  
+For metrics evaluations, see last chapter **Summary and discussion of experiments**.
 
 ### **Reference experiment**
 The reference experiment represents the baseline for the project, so every experiment is based on the experience gained from the first run.  
@@ -423,7 +424,8 @@ We have varied different model parameters:
 - different activation functions (experiment7 and experiment8)
 - different augmentations (experiment9 and experiment10)
 
-Overall, experiments8 and experiment10 have shown the best results, with **experiment10** being a marginal winner regarding perfomance.  
+Overall, experiment6, experiment8 and experiment10 have shown the best results, with **experiment10** (green dot) being a marginal winner regarding perfomance and metrics:    
+![metrics comparison](writeup_files/images/training/metrics_comparison.png)
 `momentum_optimizer` has shown best results regarding **optimizer** search.   
 Regarding **learning rate**, `exponential_decay_learning_rate` has shown slightly better performance than the others, although it could also be just a misconfiguration of that feature from my side, to get better results for the others.  
 Regarding **classification_loss**, variations didn't show much improvement, so I decided to stay with the preset `weighted_sigmoid_focal`.  
