@@ -193,6 +193,7 @@ The learning rate development looks quite weird, so a first idea (and also advic
 ### **Improve on the reference**
 
 The advice from the project task was to play around with different model parameters. During the  experiments, my strategy was to get a bit of overview which parameters have a bigger impact on performance by running with only varying one parameter, to try in the end a combination of the ones which have shown best improvements.  
+To find the different parameters and their possible values, I have inspected the [proto files on the github page of the object detection API](https://github.com/tensorflow/models/tree/master/research/object_detection/protos) and have used the github / browser search for the parameter names.
 I have varied the following parameters:  
 - different optimizers and learning rates (experiment0-experiment3)
 - different classification_loss (experiment4 and experiment5)
