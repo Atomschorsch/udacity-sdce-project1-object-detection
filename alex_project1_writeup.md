@@ -12,7 +12,7 @@ After heavy difficulties to set up a local system, I have finally managed to run
 * routing ports for tensorboard
 * plotting images from matplotlib outside of the container
 
-All timings are measured on a system with Intel I13900K and RTX4090.
+All timings are measured on a system with Intel i13900K and RTX4090.
 
 My setup including instructions and a description of difficulties along with necessary fixes are described in [alex_container_instructions.md](alex_container_instructions.md).
 
@@ -97,9 +97,9 @@ Both functions are called within the project task `Exploratory Data Analysis.ipy
 - There are 1997 images. This is not a big number for data driven methods, so it will be interesting how good the model is performing. But since we are adding up on a pretrained model and just adding some training for our own classes, it could still work out.
 - All images have the same resolution (width x height). This means we don't need any additional layers in our model to adapt to differen image sizes
 - The histogram "Number of boxes per image" in above diagram shows that there are quite a lot of images with > 30 boxes / objects, even some with > 70 boxes. This means that we will probably have very crowded images with a lot of occlusions, and maybe also a lot of tiny objects.
-    - We could try soft nms (non max suppression) in the improvment section.
+    - We could try soft nms (non max suppression) in the improvement section.
 - There are a lot of vehicle objects, only a few pedestrians and almost no cyclists (f). So it is doubtable that the model will perform well on unknown images for pedestrian or cyclist detection
-    - --> We should shortly check that we have a good class distribution in each of the data splits.
+    - We should shortly check that we have a good class distribution in each of the data splits.
 
 Having analyzed the basics and gain some information about data distribution and quality, we need to have a closer look into the data itself:
 - What is the quality of our data?
@@ -112,7 +112,7 @@ This can visualize big arbitrary sets of images from the dataset, shows the imag
 ![Matrix visualization](writeup_files/images/eda/project1_eda_visualization.png)
 ![Matrix visualization2](writeup_files/images/eda/project1_eda_matrix_view2.png)
 
-Implications from the visualization:
+**Implications from the visualization:**
 - The quality of the data seems quite okay, since multiple environments are mirrored in the data with a lot of variety in different aspects:
     - Variety in light conditions (day/night)
     - Variety in image quality (partly occlusions / waterd drops on camera lens)
@@ -162,7 +162,7 @@ After executing the `create_split.py`, I have the three expected folders at `/mn
 
 #### **Split summary**
 The number of the images sums up to the complete image count of the dataset and also matches the intended percentages.  
-By shuffling the images before splitting them up, the distribution of classes is roughly the same in all splits, which is good for training and testing.  
+By shuffling the images before splitting them up, the distribution of classes is roughly the same in all splits (see histograms of each set), which is good for training and testing.  
 From the visualization of the datasets, we also see that all 3 data splits have a similar distribution and variety of conditions due to the shuffling. All sets contain
 - light: day / night
 - weather: good / bad
@@ -181,11 +181,11 @@ The used evaluation metrics have been adapted (see above) to `pascal_voc_detecti
 After running the experiment (start commands see `alex_run_training.py`), it shows the following performance:  
 Times: training time ~20min, eval time: ~3 min  
 Having a look at the analysis via tensorboard, it shows that the metrics for the reference run (pink) are quite bad compared to all other runs. Although it has run only for 25k steps, it shows bad results quite from beginning of training. Also the total_loss is stagnating quite early, so I would not expect a big improvement on further training.  
-![Reference metric result](writeup_files/images/training/reference_metrics.png)
+![Reference metric result](writeup_files/images/training/reference_metrics.png)  
 Regarding detection, we see only very few detections yet (left column, left image, reference: orange).   
-![Reference comparison result](writeup_files/images/training/reference_eval.png)
-![Reference comparison result2](writeup_files/images/training/reference_eval2.png)
-The learning rate development looks quite weird, so a first idea (and also advice from lessons) could be to adapt the learning rate strategy (compare experiment0).
+![Reference comparison result](writeup_files/images/training/reference_eval.png)  
+![Reference comparison result2](writeup_files/images/training/reference_eval2.png)  
+The learning rate development looks quite weird, so a first idea (and also advice from lessons) could be to adapt the learning rate strategy (compare experiment0).  
 ![Reference learning rate result](writeup_files/images/training/reference_lr.png)
 
 
@@ -212,7 +212,7 @@ Training time:
 Eval time: ~ 6 min
 
 Result:  
-This has shown significant improvement regarding metrics right from the beginning compared to the reference (green line).  
+Experiment0 (green line) has shown significant improvement regarding metrics right from the beginning compared to the reference.  
 ![Reference metric result](writeup_files/images/training/reference_metrics.png)  
 An impacting factor seems to be the adaption of the learning rate. So I also want to check out other learning rate strategies and optimizers, to see if it can get even better.
 
@@ -249,7 +249,7 @@ momentum_optimizer    {
 num_steps: 60000
 ```
 Also non-max-suppression could help on big groups of objects that we have in the dataset, but it looks like this is already enabled in the pipeline config via `batch_non_max_suppression`. At [post_processing.prot](https://github.com/tensorflow/models/blob/master/research/object_detection/protos/post_processing.proto) I have also found a parameter `soft_nms_sigma` which I thought would be related to soft non-max-suppression, but I have not found any instructions on how to configure this kind of sigma value and what it implies.  
-Regarding `batch_size`. I would keep it as is, since I don't have any more memory available in my local machine.  
+Regarding `batch_size`. I would keep it as is, since the previous experiments were already running close to the limit of my local memory.  
 
 
 Result:  
