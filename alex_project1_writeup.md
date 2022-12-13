@@ -257,6 +257,7 @@ The losses (blue line) are very similar to experiment0 and only little worse.
 ![experiment3 metrics result](writeup_files/images/training/experiment_0_3.png)
 
 ### **experiment4:**
+Having tested most of the optimizers, I wanted to vary the classification_loss now.   
 Use same optimizer settings like in experiment0, but adapting classification_loss to `weighted_sigmoid` instead of `weighted_sigmoid_focal`
 
 Result:  
@@ -346,7 +347,7 @@ Slightly better metrics and performance than experiment8. From all experiments, 
 ![experiment10 metrics result](writeup_files/images/training/experiment_comparison.png)  
 ![experiment10 eval result](writeup_files/images/training/experiment_eval_comparison.png)
 ![experiment10 eval result3](writeup_files/images/training/experiment_eval_comparison3.png)
-![experiment10 eval result2](writeup_files/images/training/experiment_eval_comparison2.png)
+![experiment10 eval result2](writeup_files/images/training/experiment_eval_comparison2.png)  
 More details: see chapter Summary and discussion of experiments
 
 ## Augmentations
